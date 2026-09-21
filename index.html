@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SAS — Selecție · probe fizice</title>
+<meta name="theme-color" content="#000000">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="SAS">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2048%2048%22%3E%3Crect%20width%3D%2248%22%20height%3D%2248%22%20rx%3D%228%22%20fill%3D%22%23000000%22%2F%3E%3Cpath%20d%3D%22M24%203.5%20L41.5%209.5%20V24.5%20C41.5%2034%2033.5%2041.5%2024%2044.5%20C14.5%2041.5%206.5%2034%206.5%2024.5%20V9.5%20Z%22%20fill%3D%22%23FFFFFF%22%2F%3E%3Cpath%20d%3D%22M13%2016.5%20L24%2022.5%20L35%2016.5%20L35%2023%20L24%2029%20L13%2023%20Z%22%20fill%3D%22%23000000%22%2F%3E%3Cpath%20d%3D%22M13%2026.5%20L24%2032.5%20L35%2026.5%20L35%2033%20L24%2039%20L13%2033%20Z%22%20fill%3D%22%230A84FF%22%2F%3E%3C%2Fsvg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+:root{
+  --bg:#000000; --card:#1C1C1E; --card2:#2C2C2E; --card3:#3A3A3C; --sep:#2C2C2E;
+  --text:#FFFFFF; --text2:#8E8E93; --text3:#636366;
+  --blue:#0A84FF; --blue2:#64D2FF; --green:#30D158; --redx:#FF453A; --red2:#FF6961;
+  --orange:#FF9F0A; --purple:#BF5AF2;
+  --ok:#30D158; --red:#FF453A; --mute:#8E8E93; --mute2:#636366; --bone:#FFFFFF; --void:#000000; --line2:#2C2C2E;
+  --sans:-apple-system,BlinkMacSystemFont,"SF Pro Text","Inter",system-ui,sans-serif;
+  --round:ui-rounded,"SF Pro Rounded",-apple-system,BlinkMacSystemFont,"Inter",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--bg)}
+body{font-family:var(--sans);color:var(--text);-webkit-font-smoothing:antialiased;font-size:15px;line-height:1.45;letter-spacing:-.01em}
+h1,h2,h3{margin:0}
+.mono{font-variant-numeric:tabular-nums}
+.wrap{max-width:720px;margin:0 auto;padding:0 16px 116px}
+:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+button{font-family:inherit;color:inherit}
+.hide{display:none!important}
+
+#intro{position:fixed;inset:0;z-index:120;background:var(--bg);display:grid;place-items:center;transition:opacity .5s ease;cursor:pointer}
+#intro.gone{opacity:0;pointer-events:none}
+#intro .bars{display:none}
+#intro .c{text-align:center;padding:0 24px;animation:rise .7s cubic-bezier(.2,.8,.2,1) both}
+@keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+#intro .mk{width:76px;height:76px}
+#intro .w{font-family:var(--round);font-weight:800;line-height:1;margin-top:18px}
+#intro .r{height:4px;width:36px;border-radius:2px;background:var(--blue);margin:16px auto 0}
+#intro .s{font-size:14px;color:var(--text2);margin-top:14px}
+@media (prefers-reduced-motion:reduce){#intro .c{animation:none}}
+
+.topbar{position:sticky;top:0;z-index:40;background:rgba(0,0,0,.82);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);border-bottom:.5px solid var(--card)}
+.topbar-in{max-width:720px;margin:0 auto;padding:11px 16px;display:flex;align-items:center;gap:12px}
+.ttl{font-family:var(--round);font-weight:800;line-height:1}
+.sub{font-size:12px;color:var(--text2);margin-top:3px}
+.pill{margin-left:auto;font-size:13px;font-weight:600;padding:6px 12px;border-radius:999px;background:var(--blue);color:#fff;white-space:nowrap;font-variant-numeric:tabular-nums}
+
+.tabs{position:sticky;top:57px;z-index:30;background:rgba(0,0,0,.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tabs-in{max-width:720px;margin:0 auto;padding:10px 12px;display:flex;gap:8px}
+.tab{background:var(--card);border:0;color:var(--text2);cursor:pointer;font-weight:600;font-size:14px;padding:8px 15px;border-radius:999px;white-space:nowrap;transition:background .2s,color .2s}
+.tab.on{background:#fff;color:#000}
+
+.panel{background:var(--card);border-radius:18px;padding:18px;margin-top:12px}
+.pt{font-size:20px;font-weight:700;letter-spacing:-.02em;margin-bottom:10px;line-height:1.2}
+.muted{color:var(--text2);font-size:14px;margin:0}
+
+.hero{background:var(--card);border-radius:22px;padding:22px;margin-top:14px;display:flex;gap:22px;align-items:center;flex-wrap:wrap}
+.gauge{flex:none;text-align:center;min-width:104px}
+.gauge b{font-family:var(--round);font-weight:700;font-size:78px;line-height:.9;display:block;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.gauge span{font-size:13px;color:var(--text2);display:block;margin-top:6px}
+.hbody{flex:1;min-width:200px}
+.hbody h1{font-size:24px;font-weight:700;letter-spacing:-.02em;line-height:1.15}
+.vd{display:inline-block;font-size:12px;font-weight:600;padding:4px 10px;border-radius:999px;margin-bottom:10px}
+.vd.ok{background:rgba(48,209,88,.18);color:var(--green)}
+.vd.mid{background:rgba(10,132,255,.2);color:var(--blue2)}
+.vd.bad{background:rgba(255,69,58,.18);color:var(--red2)}
+.vd.none{background:var(--card2);color:var(--text2)}
+.wkstrip{display:flex;gap:4px;width:100%;margin-top:2px}
+.wkstrip i{flex:1;height:6px;border-radius:3px;background:var(--card2)}
+.wkstrip i.past{background:#48484A}
+.wkstrip i.now{background:var(--blue)}
+
+.prio{display:flex;gap:14px;padding:14px 0;border-bottom:.5px solid var(--sep)}
+.prio:last-child{border-bottom:none}
+.prio .r{font-family:var(--round);font-size:26px;font-weight:700;line-height:1;color:var(--blue);width:22px;flex:none}
+.prio .r.off{color:var(--text3)}
+.prio h3{font-size:16px;font-weight:600;line-height:1.25}
+.prio p{font-size:14px;color:var(--text2);margin:5px 0 0;line-height:1.5}
+.prio b{color:var(--text);font-weight:600}
+
+.pr{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:.5px solid var(--sep)}
+.pr:last-child{border-bottom:none}
+.pr .tg{font-family:var(--round);font-size:12px;font-weight:700;width:34px;height:30px;display:grid;place-items:center;background:var(--card2);color:var(--text2);border-radius:9px;flex:none}
+.pr .nm{font-weight:600;font-size:15px}
+.pr .mt{font-size:13px;color:var(--text2);margin-top:2px;line-height:1.4}
+.pr .vv{margin-left:auto;font-family:var(--round);font-size:15px;font-weight:700;padding:4px 10px;border-radius:9px;background:var(--card2);color:var(--text2);font-variant-numeric:tabular-nums}
+.pr .vv.hit{background:rgba(48,209,88,.18);color:var(--green)}
+.pr .vv.miss{background:rgba(255,69,58,.16);color:var(--red2)}
+
+.tbl{width:100%;border-collapse:collapse;font-size:14px;margin-top:10px;font-variant-numeric:tabular-nums}
+.tbl th,.tbl td{padding:9px 8px;text-align:right;border-bottom:.5px solid var(--sep)}
+.tbl th{color:var(--text3);font-weight:500;font-size:12px}
+.tbl td:first-child,.tbl th:first-child{text-align:left}
+.tbl td{color:var(--text2)}
+.tbl td:first-child{color:var(--text)}
+.tbl td.k{color:var(--text);font-weight:600}
+.tbl tr.hi td{background:rgba(10,132,255,.16);color:#fff}
+.tbl tr.hi td:first-child{border-radius:10px 0 0 10px}
+.tbl tr.hi td:last-child{border-radius:0 10px 10px 0}
+.tbl tr:last-child td{border-bottom:none}
+
+.ph{background:var(--card);border-radius:18px;margin-top:10px;overflow:hidden}
+.ph-h{width:100%;border:0;background:none;cursor:pointer;padding:16px;display:flex;align-items:center;gap:14px;text-align:left}
+.ph-n{font-family:var(--round);font-weight:700;font-size:15px;width:32px;height:32px;flex:none;display:grid;place-items:center;border-radius:50%;background:var(--card2);color:var(--text2);transition:.2s}
+.ph.open .ph-n{background:var(--blue);color:#fff}
+.ph-t{font-size:17px;font-weight:600}
+.ph-w{font-size:13px;color:var(--text2);margin-top:2px}
+.chev{margin-left:auto;color:var(--text3);width:18px;height:18px;flex:none;transition:transform .3s}
+.ph.open .chev,.day.open .chev{transform:rotate(180deg)}
+.ph-b{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.ph.open .ph-b{max-height:2400px}
+.ph-i{padding:0 16px 16px 62px}
+.ln{padding:11px 0;border-top:.5px solid var(--sep)}
+.ln b{font-size:14px;font-weight:600}
+.ln p{font-size:14px;color:var(--text2);margin:4px 0 0;line-height:1.5}
+
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.chip{background:var(--card);border:0;color:var(--text2);font-weight:600;font-size:14px;padding:8px 14px;border-radius:999px;cursor:pointer;transition:.2s;font-variant-numeric:tabular-nums}
+.chip.on{background:#fff;color:#000}
+
+.pbh{display:flex;justify-content:space-between;font-size:13px;color:var(--text2);margin:16px 2px 7px;font-variant-numeric:tabular-nums}
+.pb{height:6px;border-radius:3px;background:var(--card2);overflow:hidden}
+.pb > i{display:block;height:100%;border-radius:3px;background:var(--blue);transition:width .5s cubic-bezier(.2,.7,.2,1)}
+
+.day{background:var(--card);border-radius:18px;margin-top:10px;overflow:hidden}
+.day.today{box-shadow:inset 0 0 0 1.5px var(--blue)}
+.day.rest{opacity:.5}
+.day-h{width:100%;border:0;background:none;cursor:pointer;padding:14px 16px;display:flex;align-items:center;gap:14px;text-align:left}
+.dring{width:38px;height:38px;flex:none}
+.dring text{fill:var(--text2);font-size:10.5px;font-weight:700;font-family:var(--round)}
+.day-b{flex:1;min-width:0}
+.day-l{font-size:12px;font-weight:600;color:var(--text2);display:flex;align-items:center;gap:7px}
+.day-l em{font-style:normal;background:var(--blue);color:#fff;padding:1px 8px;border-radius:999px;font-size:11px}
+.day-t{font-size:17px;font-weight:600;letter-spacing:-.01em;margin-top:2px;line-height:1.25}
+.day-m{display:flex;align-items:center;gap:6px;margin-top:7px;flex-wrap:wrap}
+.wtag{font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px}
+.wtag.hard{background:rgba(255,69,58,.18);color:var(--red2)}
+.wtag.power{background:rgba(10,132,255,.2);color:var(--blue2)}
+.wtag.cal{background:rgba(191,90,242,.2);color:#DA8FFF}
+.wtag.easy{background:rgba(48,209,88,.16);color:var(--green)}
+.wtag.rest{background:var(--card2);color:var(--text2)}
+.wtag.loc{background:transparent;box-shadow:inset 0 0 0 1px #48484A;color:var(--text2)}
+.day-dt{font-size:12px;color:var(--text3)}
+.day-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.day.open .day-body,.day.always .day-body{max-height:4000px}
+.exl{padding:0 16px 12px;border-top:.5px solid var(--sep)}
+.ex{padding:13px 0;border-bottom:.5px solid var(--sep)}
+.ex:last-of-type{border-bottom:none}
+.ex-top{display:flex;align-items:flex-start;gap:12px}
+.ex-t{flex:1;min-width:0;border:0;background:none;cursor:pointer;display:flex;align-items:flex-start;gap:12px;text-align:left;padding:0}
+.ex-bx{width:22px;height:22px;flex:none;border-radius:50%;box-shadow:inset 0 0 0 1.5px #48484A;display:grid;place-items:center;margin-top:0;transition:.2s}
+.ex-bx svg{width:13px;height:13px;stroke-width:3.5;color:#000;opacity:0}
+.ex.on .ex-bx{background:var(--green);box-shadow:none}
+.ex.on .ex-bx svg{opacity:1}
+.ex-n{display:block;font-size:15px;font-weight:600}
+.ex.on .ex-n{color:var(--text3)}
+.ex-d{display:block;font-size:13px;color:var(--text2);margin-top:3px;line-height:1.45}
+.ex-alt{display:block;font-size:13px;color:var(--orange);margin-top:4px;line-height:1.45}
+.locb{display:inline-block;font-size:11px;font-weight:600;background:var(--card2);color:var(--text2);padding:1px 8px;border-radius:999px;margin-left:7px;vertical-align:1px}
+.sets{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 0 34px}
+.setin{width:64px;background:var(--card2);border:1px solid transparent;color:#fff;font-family:var(--round);font-weight:600;font-size:15px;padding:8px 4px;text-align:center;border-radius:11px;outline:none;font-variant-numeric:tabular-nums;transition:.15s}
+.setin::placeholder{color:var(--text3)}
+.setin:focus{border-color:var(--blue)}
+.setin.good{border-color:rgba(48,209,88,.6);color:var(--green);background:rgba(48,209,88,.1)}
+.setin.bad{border-color:rgba(255,69,58,.5);color:var(--red2)}
+.foot{font-size:13px;color:var(--text2);line-height:1.55;padding:12px 0 2px;border-top:.5px solid var(--sep)}
+.foot b{color:var(--text);font-weight:600}
+
+.clk{font-family:var(--round);font-weight:700;font-size:86px;line-height:.95;text-align:center;margin:10px 0 2px;font-variant-numeric:tabular-nums;letter-spacing:-.03em}
+.stn{text-align:center;font-size:20px;font-weight:600;margin-top:6px}
+.stt{text-align:center;font-size:13px;color:var(--text2)}
+.btns{display:grid;grid-template-columns:2fr 1fr;gap:10px;margin-top:16px}
+.btn{border:0;background:var(--card2);color:#fff;font-weight:600;font-size:15px;padding:13px;cursor:pointer;border-radius:13px;transition:.15s}
+.btn:active{transform:scale(.98)}
+.btn.solid{background:#fff;color:#000}
+.btn.red{background:var(--blue);color:#fff}
+.btn.ghost{background:transparent;color:var(--text2)}
+.lap{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:.5px solid var(--sep);font-size:14px;color:var(--text2);font-variant-numeric:tabular-nums}
+.lap b{color:var(--text);font-weight:600}
+.lap.over b{color:var(--red2)}
+.lap.under b{color:var(--green)}
+
+#dock{position:fixed;right:16px;bottom:20px;z-index:60;display:flex;flex-direction:column;align-items:flex-end;gap:10px}
+#dockMenu{background:var(--card2);border-radius:18px;padding:8px;display:flex;gap:6px;flex-wrap:wrap;box-shadow:0 12px 40px rgba(0,0,0,.7);max-width:240px;justify-content:flex-end}
+#dockMenu button{background:var(--card3);border:0;color:#fff;font-size:14px;font-weight:600;padding:9px 12px;cursor:pointer;border-radius:11px;font-variant-numeric:tabular-nums}
+#dockBtn{background:var(--blue);color:#fff;border:0;font-family:var(--round);font-size:20px;font-weight:700;padding:0 20px;height:54px;min-width:98px;border-radius:999px;cursor:pointer;box-shadow:0 10px 30px rgba(0,0,0,.65);font-variant-numeric:tabular-nums}
+#dockBtn.idle{background:#fff;color:#000;font-family:var(--sans);font-size:15px;font-weight:600}
+#dockBtn.done{background:var(--green);color:#000}
+
+.inp{background:var(--card2);border:1px solid transparent;color:#fff;font-size:16px;padding:11px 13px;width:100%;outline:none;border-radius:12px;font-family:var(--sans);font-variant-numeric:tabular-nums}
+.inp:focus{border-color:var(--blue)}
+.inp::placeholder{color:var(--text3)}
+.row{display:flex;gap:8px;margin-top:10px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+.stat{background:var(--card);border-radius:18px;padding:14px}
+.stat .k{font-size:12px;font-weight:600;color:var(--text2)}
+.stat .v{font-family:var(--round);font-size:30px;font-weight:700;line-height:1;margin-top:8px;font-variant-numeric:tabular-nums}
+.stat .v small{font-family:var(--sans);font-size:13px;color:var(--text2);font-weight:500}
+
+.note{background:rgba(10,132,255,.12);border-radius:14px;padding:14px 16px;margin-top:12px;font-size:14px;color:#C7C7CC;line-height:1.55}
+.note b{color:#fff;font-weight:600}
+.note.good{background:rgba(48,209,88,.12)}
+.note.neutral{background:var(--card2)}
+.klist{list-style:none;padding:0;margin:8px 0 0}
+.klist li{font-size:14px;padding:6px 0 6px 18px;position:relative;color:var(--text2);line-height:1.5}
+.klist li:before{content:'';position:absolute;left:2px;top:14px;width:6px;height:6px;border-radius:50%;background:var(--blue)}
+.klist b{color:var(--text);font-weight:600}
+.bigline{font-size:22px;font-weight:700;letter-spacing:-.02em;line-height:1.2;margin-top:2px}
+.bigline small{font-size:13px;color:var(--text2);display:block;margin-top:5px;font-weight:400;letter-spacing:0}
+</style>
+</head>
+<body>
+
+<div id="intro">
+  <div class="bars"><i></i><i></i><i></i><i></i><i></i></div>
+  <div class="c">
+    <svg class="mk" viewBox="0 0 48 48" aria-hidden="true"><rect width="48" height="48" rx="8" fill="#000000"/><path d="M24 3.5 L41.5 9.5 V24.5 C41.5 34 33.5 41.5 24 44.5 C14.5 41.5 6.5 34 6.5 24.5 V9.5 Z" fill="#FFFFFF"/><path d="M13 16.5 L24 22.5 L35 16.5 L35 23 L24 29 L13 23 Z" fill="#000000"/><path d="M13 26.5 L24 32.5 L35 26.5 L35 33 L24 39 L13 33 Z" fill="#0A84FF"/></svg>
+    <div class="w" style="font-size:76px;letter-spacing:.02em">SAS</div>
+    <div class="r"></div>
+    <div class="s">Selecție · probe fizice · 10 noiembrie 2026</div>
+  </div>
+</div>
+
+<div class="topbar"><div class="topbar-in">
+  <svg width="34" height="34" viewBox="0 0 48 48" aria-hidden="true"><rect width="48" height="48" rx="8" fill="#000000"/><path d="M24 3.5 L41.5 9.5 V24.5 C41.5 34 33.5 41.5 24 44.5 C14.5 41.5 6.5 34 6.5 24.5 V9.5 Z" fill="#FFFFFF"/><path d="M13 16.5 L24 22.5 L35 16.5 L35 23 L24 29 L13 23 Z" fill="#000000"/><path d="M13 26.5 L24 32.5 L35 26.5 L35 33 L24 39 L13 33 Z" fill="#0A84FF"/></svg>
+  <div><div class="ttl" style="font-size:24px;letter-spacing:.03em">SAS</div><div class="sub">Selecție · probe fizice</div></div>
+  <div class="pill" id="pill">—</div>
+</div></div>
+
+<nav class="tabs"><div class="tabs-in" id="tabs"></div></nav>
+<main class="wrap" id="view"></main>
+
+<div id="dock">
+  <div id="dockMenu" class="hide"></div>
+  <button id="dockBtn" class="idle">Pauză</button>
+</div>
+
+<script>
+/* ===== storage ===== */
+const mem={};
+const DB={
+  async get(k){
+    try{ if(window.storage){const r=await window.storage.get(k);if(r&&r.value)return JSON.parse(r.value);return null;} }catch(e){}
+    try{ const v=localStorage.getItem(k);return v?JSON.parse(v):(mem[k]??null); }catch(e){ return mem[k]??null; }
+  },
+  async set(k,v){
+    mem[k]=v;
+    try{ if(window.storage){await window.storage.set(k,JSON.stringify(v));return;} }catch(e){}
+    try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){}
+  }
+};
+let S={ex:{},log:{},open:{},probes:{},hist:[],max:{}};
+const save=()=>DB.set("ultimastatie3.state",S);
+
+const I={
+ chev:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg>',
+ check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>'
+};
+
+/* ===== date ===== */
+const TARGET=new Date(2026,10,10,8,0,0), W1=new Date(2026,8,21), D=864e5;
+const DN=["Luni","Marți","Miercuri","Joi","Vineri","Sâmbătă","Duminică"];
+const MN=["ian","feb","mar","apr","mai","iun","iul","aug","sept","oct","nov","dec"];
+const daysLeft=()=>Math.max(0,Math.ceil((TARGET-new Date())/D));
+const dateOf=(w,i)=>new Date(W1.getTime()+((w-1)*7+i)*D);
+const fmt=d=>d.getDate()+" "+MN[d.getMonth()];
+const isToday=d=>d.toDateString()===new Date().toDateString();
+const dayOffset=()=>Math.floor((new Date().setHours(12,0,0,0)-new Date(W1).setHours(12,0,0,0))/D);
+function todayIdx(){const o=dayOffset();if(o<0||o>50)return null;return{w:Math.floor(o/7)+1,i:o%7};}
+const curWeek=()=>{const t=todayIdx();return t?t.w:(dayOffset()<0?1:8);};
+const mmss=s=>{s=Math.round(s);return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0");};
+function parseVal(str){
+  str=(str||"").trim().replace(",",".");if(!str)return null;
+  if(str.includes(":")){const p=str.split(":");return (+p[0])*60+(+p[1]);}
+  const v=parseFloat(str);return isNaN(v)?null:v;
+}
+const showVal=(v,u)=>v==null?"":(u==="t"?mmss(v):String(v));
+
+/* ===== probe ===== */
+const PROBE=[
+ {k:"r1000",n:"1000 m",tg:"1K",t:230,u:"t",low:1,m:"prioritatea 1 · barem 3:50 · 15,7 km/h"},
+ {k:"s50",n:"50 m",tg:"50",t:7,u:"n",low:1,m:"prioritatea 2 · acum 7.50 · barem 7.00"},
+ {k:"flot",n:"Flotări",tg:"FL",t:70,u:"n",m:"acum 54 · barem 70 neîntrerupt"},
+ {k:"genu",n:"Genuflexiuni",tg:"GN",t:60,u:"n",m:"barem 60 · deja atins"},
+ {k:"abdo",n:"Abdomene",tg:"AB",t:60,u:"n",m:"prioritatea 3 · barem 60"},
+ {k:"atar",n:"Atârnat",tg:"AT",t:90,u:"n",m:"acum 70 s · barem 90 s"},
+ {k:"dipsm",n:"Dips neîntrerupt",tg:"D1",t:8,u:"n",m:"prioritatea 2 · ținta 8"},
+ {k:"dipst",n:"Dips total cu pauze",tg:"D+",t:15,u:"n",m:"prioritatea 2 · ținta 15 odihnit"},
+ {k:"row",n:"Ramat 1500 m",tg:"RW",t:360,u:"t",low:1,m:"circuit · limită 6:00"},
+ {k:"funie",n:"Funie",tg:"FN",t:6,u:"n",m:"circuit · 6 m"},
+ {k:"trac",n:"Tracțiuni",tg:"TR",t:10,u:"n",m:"circuit · 10"},
+ {k:"impins",n:"Împins 50 kg",tg:"IP",t:20,u:"n",m:"circuit · 20"}
+];
+const STATION=[
+ {n:"Ramat 1500 m",t:355},{n:"Funie 6 m",t:45},{n:"50 flotări",t:70},{n:"10 tracțiuni",t:40},
+ {n:"10 flexii biceps 20 kg",t:35},{n:"10 dips",t:45},{n:"40 abdomene",t:60},
+ {n:"Împins 50 kg × 20",t:50},{n:"40 sărituri peste bancă",t:50},{n:"Assault bike 1000 m",t:110}
+];
+
+/* ===== faze ===== */
+const PHASES=[
+ {t:"Acumulare",w:"S1–S3 · 21 sept – 11 oct",l:[
+  ["Alergare","Trei sesiuni: intervale lungi (800–1000 m) la 14,1–14,3 km/h, intervale scurte (400 m) la 15,3 km/h și ritm de concurs pe 600 m, urcând de la 15,0 la 15,7 km/h."],
+  ["Aerob fără impact","O zi de ramat și bike. Transferă capacitatea aerobă centrală, dar <b>nu</b> economia alergării — aia se construiește doar alergând. E asigurare contra accidentării, nu înlocuitor. Dacă în S3 nu ai niciun semnal la tibie sau Ahile, adaugi 15 min alergare ușoară la începutul ei."],
+  ["Flotări","Volum submaximal zilnic — 5 serii la ~65% din maxim, oprite cu 4–5 repetări înainte de cedare. Cedarea completă doar de două ori pe săptămână."],
+  ["Abdomene","Serii peste pragul de 43, cu ritm rar și expirație completă. Plus exercițiul de expirație, de două ori pe zi."],
+  ["Dips","Doar unde sunt bare. Acasă faci flotări priză îngustă cu picioarele ridicate — aceeași mecanică, aceleași clustere."]]},
+ {t:"Descărcare",w:"S4 · 12–18 oct",l:[
+  ["Ce faci","Volum redus cu ~40%, ritmurile rămân identice. Aici se absoarbe munca din S1–S3."],
+  ["Capcana","Te vei simți bine și vei vrea să adaugi volum. Exact așa se pierde săptămâna."],
+  ["Vineri și sâmbătă","Singurul test din program: 1000 m (ținta intermediară 4:03), 50 m, apoi flotări, dips, abdomene, atârnat."]]},
+ {t:"Specificitate",w:"S5–S6 · 19 oct – 1 nov",l:[
+  ["Alergare","Aici ajungi la 15,7 km/h, viteza de probă. 500-uri la 1:57 și 600-uri la 2:18, repetate până devin confortabile."],
+  ["Dips","Nu mai adaugi repetări, scurtezi pauza: 10 s devin 8, apoi 6. Antrenezi viteza de recuperare, exact ce îți trebuie în circuit."],
+  ["Vineri, S6","Simulare integrală — probe individuale, 20 min pauză, circuit complet."]]},
+ {t:"Ascuțire",w:"S7 + 9–10 nov",l:[
+  ["Ce faci","Volum redus cu ~50%, ritmurile și <b>numărul de ședințe</b> neschimbate. Ascuțirea începe de fapt după simularea din S6 — sunt 11 zile până la probă, exact fereastra documentată ca optimă."],
+  ["Regula","Fiecare sesiune se termină cu senzația că mai puteai."],
+  ["9 noiembrie","Activare scurtă, mâncare normală, echipament pregătit seara. Nimic nou în ultimele 48 de ore."]]}
+];
+
+/* ===== program ===== */
+const WEEKS=[
+{n:1,block:"Acumulare",days:[
+ {t:"Intervale lungi",tag:"hard",loc:"afară",ex:[
+  {n:"Încălzire",d:"12 min alergare ușoară + 3 accelerări progresive. Pași mai deși cu ~5–10% față de natural — scade încărcarea pe tibie"},
+  {n:"4 × 800 m",d:"Țintă 3:24 · 14,1 km/h · pauză 3 min mers",s:4,tv:204,u:"t",low:1},
+  {n:"Revenire",d:"10 min mers"}],
+  f:"Intervalul lung e motorul pentru 1000 m. <b>Dacă săptămâna se strică, asta rămâne.</b>"},
+ {t:"Aerob fără impact",tag:"easy",loc:"sală",ex:[
+  {n:"Ramat 5 × 500 m",d:"Țintă 1:57 · pauză 90 s",s:5,tv:117,u:"t",low:1},
+  {n:"Assault bike 3 × 2 min",d:"Tare, 2 min ușor între. Notezi metrii pe repriză",s:3,u:"n"},
+  {n:"Abdomene 3 × 30",d:"Ritm rar și egal, cam 1 repetare la 1,2 s. Expiri complet la fiecare ridicare · pauză 90 s",s:3,tv:30,u:"n"},
+  {n:"Ridicări de picioare 3 × 12",d:"Din atârnat sau din culcat. Flexorii șoldului cedează primii la 60",s:3,tv:12,u:"n"}]},
+ {t:"Viteză, împins și dips",tag:"power",loc:"sală",ex:[
+  {n:"6 × 50 m sprint",d:"Țintă ≤ 7.40 s · 24,3 km/h · pauză 3 min · start ghemuit",s:6,tv:7.4,u:"n",low:1},
+  {n:"8 × 20 m din start ghemuit",d:"Pauză completă 3 min. Împingi înapoi în pământ, nu te ridici. La 2 m, startul e unde pierzi cel mai mult",s:8,u:"n"},
+  {n:"Împins la picioare (leg press) 4 × 5",d:"Greu, fără bară pe spate. Forța de accelerare. Notezi kg",s:4,u:"n"},
+  {n:"Hip thrust 4 × 8",d:"Extensia de șold e motorul primilor 20 m. Notezi kg",s:4,u:"n"},
+  {n:"Împins la piept 4 × 6",d:"Greutatea cu care ai mai putea face 3. Notezi kg",s:4,u:"n"},
+  {n:"Împins priză îngustă 3 × 10",d:"Tricepsul e limitatorul la dips. Notezi kg",s:3,u:"n"},
+  {n:"Dips negative 5 × 4",d:"Coborâre 5 s, urci cu picioarele",bar:1,alt:"Acasă: flotări priză îngustă cu picioarele la 40 cm, 5 × 8, coborâre 4 s",s:5,tv:4,u:"n"},
+  {n:"Ridicări pe vârfuri 3 × 12",d:"Greu, pauză 1 s sus. Notezi kg",s:3,tv:12,u:"n"},
+  {n:"Izometrie gambă 4 × 30 s",d:"Pe vârfuri, genunchi întins, împingi maxim în pământ. Cea mai mare îmbunătățire documentată a economiei alergării",s:4,tv:30,u:"n"}],
+  f:"Toată munca de împins într-o zi. Împrăștiată, îți fură recuperarea pentru flotări."},
+ {t:"Recuperare",tag:"easy",loc:"bare",ex:[
+  {n:"Mobilitate",d:"15 min: șold, torace, umeri"},
+  {n:"Atârnat 3 × maxim",d:"Țintă 72 s pe prima serie. Notezi secundele",bar:1,s:3,tv:72,u:"n"},
+  {n:"Dips susținere sus 4 × 20 s",d:"Brațe blocate, fără coborâre",bar:1,alt:"Acasă: poziție de scândură pe brațe întinse, 4 × 45 s",s:4,tv:20,u:"n"},
+  {n:"Atârnat cu prosop 2 × 40 s",d:"Prosop peste bară, o mână pe fiecare capăt. Cel mai eficient pentru flexorii degetelor",s:2,tv:40,u:"n"},
+  {n:"Farmer walk 3 × 40 m",d:"Cât de greu poți ține. Notezi kg per mână",s:3,u:"n"}],
+  f:"Ziua fără flotări. <b>Singura din săptămână</b> — fără ea, coatele cedează în S6."},
+ {t:"Ritm de concurs",tag:"hard",loc:"afară",ex:[
+  {n:"Încălzire",d:"15 min"},
+  {n:"2 × 600 m",d:"Țintă 2:24 · 15,0 km/h · pauză 3 min",s:2,tv:144,u:"t",low:1},
+  {n:"2 × 200 m",d:"Țintă 0:44 · 16,4 km/h · pauză 2 min",s:2,tv:44,u:"t",low:1}]},
+ {t:"Circuit — întreținere 60%",tag:"hard",loc:"sală",ex:[
+  {n:"Ramat 1000 m",d:"Țintă 3:58",s:1,tv:238,u:"t",low:1},
+  {n:"Funie 3 urcări",d:"Doar tehnică, pauză completă",s:3,u:"n"},
+  {n:"30 flotări",d:"Fracționat 20–10"},
+  {n:"6 tracțiuni",d:"",bar:1},
+  {n:"Dips 6 total",d:"Cu pauze de 10 s în sprijin. Notezi repetările pe rundă",bar:1,s:3,u:"n"},
+  {n:"25 abdomene · 25 sărituri",d:""},
+  {n:"Bike 600 m",d:"Țintă 1:12",s:1,tv:72,u:"t",low:1}]},
+ {t:"Liber",tag:"rest",ex:[{n:"Mers 40 min",d:""},{n:"Baza zilnică la 50%",d:""}]}
+]},
+
+{n:2,block:"Acumulare",days:[
+ {t:"Intervale scurte",tag:"hard",loc:"afară",ex:[
+  {n:"Încălzire",d:"12 min + 3 accelerări"},
+  {n:"6 × 400 m",d:"Țintă 1:34 · 15,3 km/h · pauză 90 s mers",s:6,tv:94,u:"t",low:1},
+  {n:"2 × 200 m",d:"Țintă 0:43 · 16,7 km/h · pauză 2 min",s:2,tv:43,u:"t",low:1}]},
+ {t:"Aerob fără impact",tag:"easy",loc:"sală",ex:[
+  {n:"Ramat 4 × 1000 m",d:"Țintă 4:05 · pauză 2 min",s:4,tv:245,u:"t",low:1},
+  {n:"Abdomene 2 × 40",d:"Peste pragul tău de 43. Dacă respirația se blochează, 2 respirații complete sus și continui · pauză 2 min",s:2,tv:40,u:"n"},
+  {n:"Ridicări de picioare 3 × 14",d:"Controlat, fără avânt",s:3,tv:14,u:"n"}]},
+ {t:"Viteză, împins și dips",tag:"power",loc:"sală",ex:[
+  {n:"6 × 50 m sprint",d:"Țintă ≤ 7.30 s · 24,7 km/h · pauză 3 min",s:6,tv:7.3,u:"n",low:1},
+  {n:"8 × 20 m din start ghemuit",d:"Pauză completă 3 min. Împingi înapoi în pământ, nu te ridici. La 2 m, startul e unde pierzi cel mai mult",s:8,u:"n"},
+  {n:"Împins la picioare (leg press) 4 × 5",d:"Greu, fără bară pe spate. Forța de accelerare. Notezi kg",s:4,u:"n"},
+  {n:"Hip thrust 4 × 8",d:"Extensia de șold e motorul primilor 20 m. Notezi kg",s:4,u:"n"},
+  {n:"Împins la piept 5 × 5",d:"Cu 2–3 kg mai mult ca săptămâna trecută. Notezi kg",s:5,u:"n"},
+  {n:"Împins priză îngustă 3 × 10",d:"Notezi kg",s:3,u:"n"},
+  {n:"Dips negative 5 × 5",d:"Coborâre 5 s",bar:1,alt:"Acasă: flotări priză îngustă cu picioarele la 40 cm, 5 × 10",s:5,tv:5,u:"n"},
+  {n:"Dips clustere 3 runde",d:"La cedare, pauză 10 s în sprijin. Notezi repetările pe rundă",bar:1,s:3,u:"n"},
+  {n:"Ridicări pe vârfuri 3 × 15",d:"Notezi kg",s:3,u:"n"},
+  {n:"Izometrie gambă 4 × 35 s",d:"Împingere maximă, genunchi întins",s:4,tv:35,u:"n"}]},
+ {t:"Recuperare",tag:"easy",loc:"bare",ex:[
+  {n:"Mobilitate",d:"15 min"},
+  {n:"Atârnat 3 × maxim",d:"Țintă 88 s",bar:1,s:3,tv:88,u:"n"},
+  {n:"Dips susținere sus 4 × 25 s",d:"",bar:1,alt:"Acasă: scândură pe brațe întinse 4 × 50 s",s:4,tv:25,u:"n"},
+  {n:"Atârnat cu prosop 2 × 40 s",d:"Prosop peste bară, o mână pe fiecare capăt. Cel mai eficient pentru flexorii degetelor",s:2,tv:40,u:"n"},
+  {n:"Farmer walk 3 × 40 m",d:"Cât de greu poți ține. Notezi kg per mână",s:3,u:"n"}],
+  f:"Ziua fără flotări."},
+ {t:"Ritm de concurs",tag:"hard",loc:"afară",ex:[
+  {n:"Încălzire",d:"15 min"},
+  {n:"3 × 600 m",d:"Țintă 2:21 · 15,3 km/h · pauză 3 min",s:3,tv:141,u:"t",low:1}]},
+ {t:"Circuit — întreținere 65%",tag:"hard",loc:"sală",ex:[
+  {n:"Ramat 1000 m",d:"Țintă 3:56",s:1,tv:236,u:"t",low:1},
+  {n:"Funie 3 urcări · 35 flotări · 7 tracțiuni",d:""},
+  {n:"Dips 7 total",d:"Pauze de 10 s. Notezi pe rundă",bar:1,s:3,u:"n"},
+  {n:"30 abdomene · 30 sărituri",d:""},
+  {n:"Bike 700 m",d:"Țintă 1:24",s:1,tv:84,u:"t",low:1}]},
+ {t:"Liber",tag:"rest",ex:[{n:"Baza zilnică",d:""}]}
+]},
+
+{n:3,block:"Acumulare",days:[
+ {t:"Intervale lungi — vârf de volum",tag:"hard",loc:"afară",ex:[
+  {n:"Încălzire",d:"15 min"},
+  {n:"3 × 1000 m",d:"Țintă 4:12 · 14,3 km/h · pauză 4 min",s:3,tv:252,u:"t",low:1},
+  {n:"Revenire",d:"10 min"}],
+  f:"Cea mai grea sesiune din program. Dacă a treia repetare iese peste 4:20, oprești la două — ai luat ce trebuia."},
+ {t:"Aerob fără impact",tag:"easy",loc:"sală",ex:[
+  {n:"Ramat 3 × 1500 m",d:"Țintă 6:05 · pauză 3 min",s:3,tv:365,u:"t",low:1},
+  {n:"Abdomene 2 × 45",d:"Peste prag. Notezi la ce repetare simți că se taie respirația",s:2,tv:45,u:"n"},
+  {n:"Ridicări de picioare 3 × 15",d:"",s:3,tv:15,u:"n"}]},
+ {t:"Viteză, împins și dips",tag:"power",loc:"sală",ex:[
+  {n:"8 × 50 m sprint",d:"Țintă ≤ 7.20 s · 25,0 km/h · pauză 3 min",s:8,tv:7.2,u:"n",low:1},
+  {n:"8 × 20 m din start ghemuit",d:"Pauză completă 3 min. Împingi înapoi în pământ, nu te ridici. La 2 m, startul e unde pierzi cel mai mult",s:8,u:"n"},
+  {n:"Împins la picioare (leg press) 4 × 5",d:"Greu, fără bară pe spate. Forța de accelerare. Notezi kg",s:4,u:"n"},
+  {n:"Hip thrust 4 × 8",d:"Extensia de șold e motorul primilor 20 m. Notezi kg",s:4,u:"n"},
+  {n:"Împins la piept 5 × 5",d:"Notezi kg",s:5,u:"n"},
+  {n:"Împins priză îngustă 4 × 10",d:"Notezi kg",s:4,u:"n"},
+  {n:"Dips clustere 4 runde",d:"La cedare, pauză 10 s",bar:1,alt:"Acasă: flotări priză îngustă picioare ridicate, 4 runde la cedare cu pauză 10 s",s:4,u:"n"},
+  {n:"Flotări cu greutate 4 × 10",d:"Rucsac încărcat sau picioarele la 50 cm. Ridică plafonul, nu anduranța",s:4,tv:10,u:"n"},
+  {n:"Ridicări pe vârfuri 4 × 12",d:"Notezi kg",s:4,u:"n"},
+  {n:"Izometrie gambă 4 × 40 s",d:"Împingere maximă, genunchi întins",s:4,tv:40,u:"n"}]},
+ {t:"Recuperare",tag:"easy",loc:"bare",ex:[
+  {n:"Mobilitate",d:"15 min"},
+  {n:"Atârnat 3 × maxim",d:"Țintă 80 s",bar:1,s:3,tv:80,u:"n"},
+  {n:"Dips susținere sus 4 × 30 s",d:"",bar:1,s:4,tv:30,u:"n"},
+  {n:"Atârnat cu prosop 2 × 40 s",d:"Prosop peste bară, o mână pe fiecare capăt. Cel mai eficient pentru flexorii degetelor",s:2,tv:40,u:"n"},
+  {n:"Farmer walk 3 × 40 m",d:"Cât de greu poți ține. Notezi kg per mână",s:3,u:"n"}],
+  f:"Ziua fără flotări."},
+ {t:"Ritm de concurs — fracționat",tag:"hard",loc:"afară",ex:[
+  {n:"Încălzire",d:"15 min"},
+  {n:"600 m + 400 m",d:"600 în 2:18 și 400 în 1:32 — ambele 15,7 km/h, ritm de probă · 60 s între fracțiuni",s:2,u:"t",low:1},
+  {n:"Repeți setul",d:"După 5 min pauză · aceleași ținte",s:2,u:"t",low:1}]},
+ {t:"Circuit — întreținere 70%",tag:"hard",loc:"sală",ex:[
+  {n:"Ramat 1200 m",d:"Țintă 4:42",s:1,tv:282,u:"t",low:1},
+  {n:"Funie 4 urcări · 40 flotări · 8 tracțiuni",d:""},
+  {n:"Dips 8 total",d:"Pauze de 10 s",bar:1,s:3,u:"n"},
+  {n:"35 abdomene · 35 sărituri",d:""},
+  {n:"Bike 800 m",d:"Țintă 1:36",s:1,tv:96,u:"t",low:1}]},
+ {t:"Liber",tag:"rest",ex:[{n:"Baza zilnică la 50%",d:""}]}
+]},
+
+{n:4,block:"Descărcare",days:[
+ {t:"Intervale reduse",tag:"hard",loc:"afară",ex:[
+  {n:"Încălzire",d:"12 min"},
+  {n:"4 × 400 m",d:"Țintă 1:32 · 15,7 km/h · pauză 90 s",s:4,tv:92,u:"t",low:1}]},
+ {t:"Aerob ușor",tag:"easy",loc:"sală",ex:[
+  {n:"Ramat 3 × 500 m",d:"Țintă 1:57 · pauză 2 min",s:3,tv:117,u:"t",low:1},
+  {n:"Assault bike",d:"10 min continuu, ușor"},
+  {n:"Abdomene — test",d:"O serie unică, maxim. Notezi și repetarea la care respirația se strânge",s:1,tv:60,u:"n"}]},
+ {t:"Viteză scurtă",tag:"power",loc:"sală",ex:[
+  {n:"4 × 50 m",d:"Țintă ≤ 7.15 s · 25,2 km/h · pauză 3 min",s:4,tv:7.15,u:"n",low:1},
+  {n:"Împins la piept 3 × 5",d:"Cu 10% mai puțin decât în S3. Notezi kg",s:3,u:"n"},
+  {n:"Dips negative 3 × 3",d:"Fără să forțezi",bar:1,s:3,tv:3,u:"n"}]},
+ {t:"Liber",tag:"rest",ex:[{n:"Mers 30 min",d:""},{n:"Baza zilnică la 50%",d:""}]},
+ {t:"Test — alergare",tag:"cal",loc:"afară",ex:[
+  {n:"Încălzire completă",d:"15 min + 3 accelerări"},
+  {n:"50 m × 2",d:"Cronometrat, pauză 4 min",s:2,tv:7,u:"n",low:1},
+  {n:"Pauză",d:"15 min plimbare"},
+  {n:"1000 m",d:"Efort maxim. Ținta intermediară 4:03 · 14,8 km/h",s:1,tv:243,u:"t",low:1}],
+  f:"Dacă ești peste 4:08, problema e volumul aerob, nu intensitatea: adaugi a doua zi de ramat în S5."},
+ {t:"Test — forță și rezistență",tag:"cal",loc:"bare",ex:[
+  {n:"Flotări maxim",d:"O serie neîntreruptă. Cifra care recalibrează volumul zilnic",s:1,tv:70,u:"n"},
+  {n:"Dips maxim dintr-o serie",d:"Până la cedare, fără pauză",bar:1,s:1,tv:8,u:"n"},
+  {n:"Dips total cu pauze",d:"După 6 min: serii cu 10 s pauză, până nu mai iese",bar:1,s:1,tv:15,u:"n"},
+  {n:"Abdomene",d:"Câte faci în intervalul probei",s:1,tv:60,u:"n"},
+  {n:"Atârnat maxim",d:"Notezi secundele",bar:1,s:1,tv:90,u:"n"}],
+  f:"Treci maximul de flotări și dips în fila Cifre — aplicația recalculează singură volumul zilnic."},
+ {t:"Liber",tag:"rest",ex:[{n:"Baza zilnică",d:""}]}
+]},
+
+{n:5,block:"Specificitate",days:[
+ {t:"Intervale la ritm",tag:"hard",loc:"afară",ex:[
+  {n:"Încălzire",d:"15 min"},
+  {n:"5 × 500 m",d:"Țintă 1:57 · 15,4 km/h · pauză 2 min",s:5,tv:117,u:"t",low:1},
+  {n:"Revenire",d:"10 min"}]},
+ {t:"Aerob și abdomene",tag:"easy",loc:"sală",ex:[
+  {n:"Ramat 2 × 2000 m",d:"Țintă 8:10 · pauză 4 min",s:2,tv:490,u:"t",low:1},
+  {n:"Abdomene 2 × 50",d:"Neîntrerupt. Notezi la ce repetare se taie respirația — ar trebui să nu se mai taie",s:2,tv:50,u:"n"},
+  {n:"Ridicări de picioare 3 × 15",d:"",s:3,tv:15,u:"n"}]},
+ {t:"Viteză, împins și dips",tag:"power",loc:"sală",ex:[
+  {n:"6 × 50 m",d:"Țintă ≤ 7.10 s · 25,4 km/h · pauză 3 min",s:6,tv:7.1,u:"n",low:1},
+  {n:"8 × 20 m din start ghemuit",d:"Pauză completă 3 min. Împingi înapoi în pământ, nu te ridici. La 2 m, startul e unde pierzi cel mai mult",s:8,u:"n"},
+  {n:"Împins la picioare (leg press) 4 × 5",d:"Greu, fără bară pe spate. Forța de accelerare. Notezi kg",s:4,u:"n"},
+  {n:"Hip thrust 4 × 8",d:"Extensia de șold e motorul primilor 20 m. Notezi kg",s:4,u:"n"},
+  {n:"Împins la piept 4 × 4",d:"Greu. Notezi kg",s:4,u:"n"},
+  {n:"Dips clustere 4 runde",d:"Pauză scurtată la 8 s. Notezi repetările pe rundă",bar:1,s:4,u:"n"},
+  {n:"Dips serie maximă",d:"O singură dată, la final",bar:1,s:1,tv:8,u:"n"},
+  {n:"Ridicări pe vârfuri 4 × 10",d:"Greu. Notezi kg",s:4,u:"n"},
+  {n:"Izometrie gambă 4 × 40 s",d:"Împingere maximă, genunchi întins",s:4,tv:40,u:"n"}],
+  f:"De aici <b>nu mai adaugi repetări la dips, scurtezi pauza.</b> Recuperarea rapidă e ce îți trebuie în circuit."},
+ {t:"Recuperare",tag:"easy",loc:"bare",ex:[
+  {n:"Mobilitate",d:"15 min"},
+  {n:"Atârnat 3 × maxim",d:"Țintă 88 s",bar:1,s:3,tv:88,u:"n"},
+  {n:"Dips susținere sus 4 × 30 s",d:"",bar:1,s:4,tv:30,u:"n"}],
+  f:"Ziua fără flotări."},
+ {t:"Ritm de concurs — fracționat",tag:"hard",loc:"afară",ex:[
+  {n:"Încălzire",d:"15 min"},
+  {n:"2 × (600 m + 400 m)",d:"600 în 2:18 și 400 în 1:32 — ambele 15,7 km/h · 60 s între fracțiuni, 4 min între seturi",s:4,u:"t",low:1}]},
+ {t:"Simulare probe individuale",tag:"cal",loc:"afară",ex:[
+  {n:"50 m",d:"Cronometrat",s:1,tv:7,u:"n",low:1},
+  {n:"1000 m",d:"Cronometrat",s:1,tv:230,u:"t",low:1},
+  {n:"70 flotări",d:"Notezi câte ai reușit",s:1,tv:70,u:"n"},
+  {n:"60 genuflexiuni · 60 abdomene",d:"Notezi abdomenele",s:1,tv:60,u:"n"},
+  {n:"Atârnat 90 s",d:"Notezi secundele",bar:1,s:1,tv:90,u:"n"}],
+  f:"În ordinea probei, cu pauzele reale."},
+ {t:"Liber",tag:"rest",ex:[{n:"Baza zilnică",d:""}]}
+]},
+
+{n:6,block:"Specificitate",days:[
+ {t:"Intervale la ritm",tag:"hard",loc:"afară",ex:[
+  {n:"Încălzire",d:"15 min"},
+  {n:"4 × 600 m",d:"Țintă 2:18 · 15,7 km/h · ritm de probă · pauză 2:30",s:4,tv:138,u:"t",low:1}]},
+ {t:"Cuplajul din circuit",tag:"hard",loc:"sală",ex:[
+  {n:"2 × 750 m ramat",d:"Țintă 2:53 · pauză 3 min",s:2,tv:173,u:"t",low:1},
+  {n:"Imediat după al doilea",d:"50 flotări, 10 tracțiuni, 10 dips — cronometrat. Notezi timpul total",bar:1,s:1,u:"t",low:1}],
+  f:"Aici afli dacă pauzele de 8 s îți ajung sub oboseală sau ai nevoie de 10."},
+ {t:"Viteză maximă",tag:"power",loc:"sală",ex:[
+  {n:"8 × 50 m",d:"Țintă ≤ 7.00 s · 25,7 km/h · pauză 3 min",s:8,tv:7,u:"n",low:1},
+  {n:"8 × 20 m din start ghemuit",d:"Pauză completă 3 min. Împingi înapoi în pământ, nu te ridici. La 2 m, startul e unde pierzi cel mai mult",s:8,u:"n"},
+  {n:"Împins la picioare (leg press) 4 × 5",d:"Greu, fără bară pe spate. Forța de accelerare. Notezi kg",s:4,u:"n"},
+  {n:"Hip thrust 4 × 8",d:"Extensia de șold e motorul primilor 20 m. Notezi kg",s:4,u:"n"},
+  {n:"Împins la piept 4 × 4",d:"Notezi kg",s:4,u:"n"},
+  {n:"Dips clustere 4 runde",d:"Pauză scurtată la 6 s",bar:1,s:4,u:"n"}]},
+ {t:"Recuperare",tag:"easy",ex:[
+  {n:"Mobilitate",d:"20 min"},{n:"Bike ușor 20 min",d:""},{n:"Fără flotări azi",d:""}]},
+ {t:"Simulare integrală",tag:"cal",loc:"sală",ex:[
+  {n:"Probe individuale complete",d:"În ordinea probei"},
+  {n:"Pauză",d:"20 min"},
+  {n:"Circuit complet",d:"Cronometrat cu cronometrul din fila Circuit",s:1,u:"t",low:1}],
+  f:"Ultima repetiție generală. Tot ce urmează e ascuțire."},
+ {t:"Recuperare activă",tag:"easy",ex:[
+  {n:"Mers sau bike 40 min",d:"Foarte ușor"},{n:"Mobilitate 20 min",d:""},{n:"Fără dips și flotări azi",d:""}]},
+ {t:"Liber",tag:"rest",ex:[{n:"Baza zilnică la 40%",d:""}]}
+]},
+
+{n:7,block:"Ascuțire",days:[
+ {t:"Viteză scurtă",tag:"power",loc:"afară",ex:[
+  {n:"4 × 50 m",d:"Țintă ≤ 6.95 s · 25,9 km/h · pauză 3 min",s:4,tv:6.95,u:"n",low:1},
+  {n:"2 × 30 m accelerare",d:""}],
+  f:"Atât. Fără forță azi."},
+ {t:"Ritm scurt",tag:"easy",loc:"afară",ex:[
+  {n:"Încălzire",d:"15 min"},
+  {n:"3 × 400 m",d:"Țintă 1:32 · 15,7 km/h · exact ritmul de probă · pauză 2 min",s:3,tv:92,u:"t",low:1}]},
+ {t:"Stații tehnice",tag:"easy",loc:"sală",ex:[
+  {n:"Funie 3 urcări",d:"Tehnic perfecte"},
+  {n:"Dips 3 × 3",d:"Departe de cedare",bar:1,s:3,tv:3,u:"n"},
+  {n:"Împins 50 kg 2 × 10",d:"",s:2,tv:10,u:"n"},
+  {n:"Ramat 500 m",d:"Țintă 1:57, o singură dată",s:1,tv:117,u:"t",low:1}]},
+ {t:"Activare scurtă",tag:"easy",ex:[
+  {n:"Mers 20 min",d:""},
+  {n:"4 × 100 m alergare ușoară",d:"Relaxat, doar ca să nu pierzi frecvența"},
+  {n:"Mobilitate 10 min",d:""}],
+  f:"În taper <b>scazi volumul, nu numărul de ședințe.</b> Frecvența menținută dă un efect mai bun decât frecvența redusă."},
+ {t:"Ultima activare",tag:"easy",loc:"sală",ex:[
+  {n:"Ramat 1000 m",d:"Țintă 4:05, ~60% efort",s:1,tv:245,u:"t",low:1},
+  {n:"30 flotări · 6 tracțiuni · 4 dips",d:""},
+  {n:"Bike 600 m",d:"Țintă 1:15",s:1,tv:75,u:"t",low:1}],
+  f:"Te oprești cât ești încă proaspăt."},
+ {t:"Recuperare",tag:"easy",ex:[
+  {n:"Mobilitate 20 min",d:""},{n:"Mers 30 min",d:""},{n:"Baza zilnică la 40%",d:""}]},
+ {t:"Liber",tag:"rest",ex:[{n:"Somn și mâncare normale",d:"Fără experimente"},{n:"Echipament pregătit",d:""}]}
+]},
+
+{n:8,block:"Probă",days:[
+ {t:"Activare — ziua dinainte",tag:"rest",ex:[
+  {n:"Mers 10 min",d:""},
+  {n:"3 × 20 m accelerări",d:""},
+  {n:"10 flotări, 5 genuflexiuni",d:"Atât"},
+  {n:"Carbohidrați normali",d:"La toate mesele, apă constantă, sare la mese"},
+  {n:"Nimic nou",d:"Nici mâncare, nici suplimente, nici încălțăminte"},
+  {n:"Echipament pregătit seara",d:"Culcat mai devreme cu o oră"}]},
+ {t:"Ziua probei",tag:"cal",ex:[
+  {n:"Încălzire — start cu 45 min înainte",d:"Protocolul complet e în fila Probă"},
+  {n:"8 min mers / alergare ușoară",d:""},
+  {n:"5 min mobilitate dinamică",d:"Șold, gleznă, umeri"},
+  {n:"3 × 30 m accelerări",d:"70%, 85%, 95%"},
+  {n:"2 × 15 m sprint",d:"Din start ghemuit"},
+  {n:"15 flotări, 10 genuflexiuni",d:"Activare, nu oboseală"},
+  {n:"Te ții cald",d:"Reactivezi 2 × 20 m cu 10 min înainte de fiecare probă"}],
+  f:"Plan de cursă 1000 m: <b>0:46 – 1:32 – 2:18 – 3:04 – 3:50</b> · 15,7 km/h constant."}
+]}
+];
+
+/* ===== baza zilnică calculată ===== */
+function baseToday(){
+  const fm=S.max.flot, dm=S.max.dips, t=todayIdx();
+  const i=t?t.i:0;
+  const noPush=(i===3)||(t&&t.w===6&&(i===3||i===5));
+  const failDay=(i===2||i===4);
+  const out=[];
+  if(noPush){
+    out.push({n:"Flotări — pauză",d:"Azi nu faci flotări. E singura zi din săptămână și e obligatorie."});
+  }else if(failDay){
+    out.push({n:"Flotări — zi de cedare",d:fm?`O serie unică până la cedare (reper ${fm}), apoi 4 clustere cu 7 s pauză.`:"O serie unică până la cedare, apoi 4 clustere cu 7 s pauză. Treci maximul în Cifre ca să-ți calculez seriile."});
+  }else{
+    const sub=fm?Math.round(fm*.55):null;
+    out.push({n:"Flotări — volum submaximal",d:sub?`5 × ${sub} repetări, pauză 90 s. Oprești departe de cedare.`:"5 serii la ~55% din maxim, pauză 90 s. Treci maximul în Cifre ca să-ți calculez seriile."});
+  }
+  out.push({n:"Abdomene — respirație blocată pe repetare",d:"3 × 30, ritm rar și egal. Expirație completă pe urcare, inspirație pe nas pe coborâre. Pauză 90 s între serii."});
+  out.push({n:"Expirație completă — 2 × 30 respirații",d:"Culcat, genunchii îndoiți: expiri tot aerul, ultimele 3 secunde forțat din abdomen, apoi inspiri pe nas. De două ori pe zi, oriunde."});
+  if(!noPush) out.push({n:"Dips GTG",d:dm?`4–5 × ${Math.max(1,Math.round(dm*.5))} repetări împrăștiate în zi, unde ai bare. Acasă: flotări priză îngustă cu picioarele ridicate, 4 × 8.`:"4–5 serii scurte la jumătate din maxim, unde ai bare. Acasă: flotări priză îngustă cu picioarele ridicate, 4 × 8."});
+  out.push({n:"Atârnat GTG",d:"3 × 30–40 s împrăștiate în zi, fără cedare. Doar unde ai bară."});
+  out.push({n:"Mobilitate",d:"5 min șold și torace."});
+  return out;
+}
+
+/* ===== helpers ===== */
+const $=s=>document.querySelector(s);
+function hits(){let h=0;PROBE.forEach(p=>{const v=S.probes[p.k];if(v!=null&&(p.low?v<=p.t:v>=p.t))h++;});return{h,tot:PROBE.length};}
+function exByKey(k){const p=k.split("-").map(Number),wk=WEEKS.find(x=>x.n===p[0]);return wk&&wk.days[p[1]]?wk.days[p[1]].ex[p[2]]:null;}
+
+/* ===== tabs ===== */
+const TABS=[["azi","Azi"],["brief","Brief"],["plan","Faze"],["zile","Zile"],["ritm","Ritm"],["circuit","Circuit"],["dovezi","Dovezi"],["cifre","Cifre"],["proba","Probă"]];
+let view="azi";
+function paintTabs(){
+  $("#tabs").innerHTML=TABS.map(([k,l])=>`<button class="tab${k===view?" on":""}" data-k="${k}">${l}</button>`).join("");
+  $("#tabs").querySelectorAll(".tab").forEach(b=>b.onclick=()=>{view=b.dataset.k;paintTabs();render();scrollTo({top:0});});
+}
+
+/* ===== AZI ===== */
+function vAzi(){
+  const t=todayIdx(),d=daysLeft();
+  let card="",next="";
+  if(t){
+    const w=WEEKS.find(x=>x.n===t.w),day=w.days[t.i];
+    card=dayCard(w,day,t.i,true);
+    const nt=t.i<6?{w:t.w,i:t.i+1}:(t.w<8?{w:t.w+1,i:0}:null);
+    if(nt){const nw=WEEKS.find(x=>x.n===nt.w);if(nw&&nw.days[nt.i]){
+      const nd=nw.days[nt.i];
+      next=`<div class="panel"><div class="pt">Mâine</div>
+        <div class="bigline">${nd.t}<small>${nd.loc?nd.loc+" · ":""}${nd.ex.length} exerciții</small></div></div>`;}}
+  }else{
+    card=`<div class="panel"><div class="pt">În afara programului</div>
+      <p class="muted">Programul începe luni, 21 septembrie, și se termină pe 10 noiembrie. Folosește fila Zile ca să navighezi.</p></div>`;
+  }
+  const base=baseToday();
+  return `
+  <div class="hero">
+    <div class="gauge"><b>${d}</b><span>zile rămase</span></div>
+    <div class="hbody">
+      <h1>${t?"Săptămâna "+t.w+" · "+DN[t.i]:"10 noiembrie 2026"}</h1>
+      <p class="muted" style="margin-top:7px;font-size:12.5px">${t?WEEKS.find(x=>x.n===t.w).block:"proba"}</p>
+    </div>
+    <div class="wkstrip">${Array.from({length:7},(_,i)=>`<i class="${t&&i+1<t.w?"past":(t&&i+1===t.w?"now":"")}"></i>`).join("")}</div>
+  </div>
+  ${card}
+  <div class="panel edge"><div class="pt">Baza zilnică</div>
+    ${base.map(b=>`<div class="pr"><div><div class="nm">${b.n}</div><div class="mt">${b.d}</div></div></div>`).join("")}
+    ${S.max.flot?"":'<div class="note"><b>Treci maximul de flotări și dips în fila Cifre.</b> Aplicația îți calculează apoi seriile zilnice exacte, în loc de procente.</div>'}
+  </div>
+  ${next}`;
+}
+
+/* ===== BRIEF ===== */
+function vBrief(){
+  const {h,tot}=hits(),d=daysLeft(),w=curWeek();
+  let c="none",t="fără date";
+  if(h>0){ if(h>=10){c="ok";t="pregătit";} else if(h>=6){c="mid";t="aproape";} else {c="bad";t="decalaj mare";} }
+  return `
+  <div class="hero">
+    <div class="gauge"><b>${d}</b><span>zile rămase</span></div>
+    <div class="hbody">
+      <div class="vd ${c}">${t}</div>
+      <h1>${h} din ${tot} bareme atinse</h1>
+      <p class="muted" style="margin-top:7px;font-size:12.5px">10 noiembrie 2026 · săptămâna ${w}</p>
+    </div>
+  </div>
+
+  <div class="panel edge">
+    <div class="pt">Ordinea de bătaie</div>
+    <div class="prio"><div class="r">1</div><div><h3>1000 m · 4:15 → 3:50</h3>
+      <p>Decalajul cel mai mare în valoare absolută: <b>25 de secunde</b>, de la 14,1 la 15,7 km/h. Trei alergări pe săptămână. Dacă săptămâna se strică, intervalele lungi rămân.</p></div></div>
+    <div class="prio"><div class="r">2</div><div><h3>50 m · 7.50 → 7.00</h3>
+      <p>Jumătate de secundă, adică <b>6,7%</b>. Viteza e calitatea care se antrenează cel mai greu, deci proporțional ăsta e cel mai dur obiectiv din tot setul. La 2 metri, câștigul e aproape tot în primii 20 de metri — de aceea ziua de viteză are acum starturi, leg press și hip thrust, nu doar sprinturi cronometrate.</p></div></div>
+    <div class="prio"><div class="r">3</div><div><h3>Greutatea corporală</h3>
+      <p>Singura pârghie care lucrează simultan la <b>cinci</b> probe: 1000 m, 50 m, flotări, atârnat, dips. Cinci kilograme jos valorează cam cât toate intervalele din primele trei săptămâni la un loc. Se scade în S1–S4, nu după.</p></div></div>
+    <div class="prio"><div class="r">4</div><div><h3>Dips · sub 5 → 10 cu pauze</h3>
+      <p>Clustere cu pauza scurtată treptat: 10 s → 8 s → 6 s. Nu forță maximă, ci viteză de recuperare între serii.</p></div></div>
+    <div class="prio"><div class="r off">5</div><div><h3>Flotări 54→70 · atârnat 70→90 s · abdomene 43→60</h3>
+      <p>Toate trei sunt creșteri de 29–40%, mari dar previzibile cu volum frecvent. Nu sunt problema — sunt muncă.</p></div></div>
+    <div class="prio"><div class="r off">6</div><div><h3>Genuflexiuni · deja atins</h3>
+      <p>Singura probă care nu cere nimic. Doar verificare.</p></div></div>
+    <div class="note"><b>Șase probe din șapte cer îmbunătățire.</b> Asta înseamnă că programul e la limita a ce poate absorbi un corp în șapte săptămâni. Nu mai adăuga nimic peste el — dacă simți că ai energie în plus, acolo se scad kilograme, nu se adaugă serii.</div>
+  </div>
+
+  <div class="panel">
+    <div class="pt">Metodele alese și de ce</div>
+    <div class="note"><b>Flotări: volum submaximal, nu cedare zilnică.</b> Cinci serii la ~65% din maxim, oprite cu 4–5 repetări înainte de cedare, produc aceeași creștere a maximului cu mult mai puțină oboseală acumulată. Cedarea completă rămâne, dar doar de două ori pe săptămână, plus o zi cu flotări îngreunate care ridică plafonul de forță. Și o zi pe săptămână fără niciun fel de flotări — joia.</div>
+    <div class="note"><b>Abdomene: problema e respirația, nu abdomenul.</b> Dacă se taie la 43, înseamnă că expirația e incompletă și CO2 se adună până organismul oprește seria — nu că mușchiul cedează. Trei corecții: <b>ritm mai rar</b> (o repetare la 1,2 s, nu una pe secundă, ca să încapă un ciclu respirator întreg), <b>expirație completă și forțată pe urcare</b> cu inspirație pe nas pe coborâre, și <b>serii peste prag</b> — 2 × 40, apoi 45, apoi 50, în loc de serii scurte de 20. Plus exercițiul de expirație completă, de două ori pe zi: culcat, expiri tot aerul, ultimele 3 secunde forțat din abdomen. În 3–4 săptămâni pragul se mută.</div><div class="note"><b>Detaliu de execuție.</b> Mâinile încrucișate pe piept, nu la ceafă. Prinderea la ceafă trage capul înainte și închide cutia toracică exact când ai nevoie să expiri complet.</div>
+    <div class="note"><b>Dips fără paralele acasă.</b> Lucrul serios se face unde sunt bare — sală sau aparate de exterior, de două ori pe săptămână. Acasă, înlocuitorul e flotarea cu priză îngustă și picioarele ridicate la 40–50 cm: aceeași aplecare a trunchiului, aceeași blocare din triceps. <b>Nu</b> dips între scaune și nu dips la bancă cu mâinile în spate.</div>
+    <div class="note"><b>Intervale lungi, nu doar 400-uri.</b> 800-urile și 1000-urile te țin peste 90% din VO2max minute întregi, nu secunde. Pentru o probă de 3:50, rezistența specifică se construiește acolo.</div>
+    <div class="note"><b>Ridicări pe vârfuri grele.</b> Rigiditatea tendonului ahilian îmbunătățește economia alergării fără să crească VO2max — și cântărește cu atât mai mult cu cât ești mai greu.</div>
+    <div class="note good"><b>Ce am scos.</b> Săptămâna de teste. Ai trei săptămâni de acumulare în loc de două, iar singurul test rămas e cel din S4, unde chiar schimbă o decizie.</div>
+    <div class="note neutral">Toate alegerile de mai sus sunt verificate în literatură — vezi fila <b>Dovezi</b> pentru ce a confirmat cercetarea și ce am corectat după ea.</div>
+  </div>
+
+  <div class="panel">
+    <div class="pt">Probe individuale</div>
+    ${PROBE.slice(0,6).map(pRow).join("")}
+  </div>
+
+  <div class="panel">
+    <div class="pt">Circuit — 10 stații</div>
+    <table class="tbl"><tr><th>Stație</th><th>Cerință</th></tr>
+      <tr><td>1 · Ramat</td><td class="k">1500 m sub 6:00</td></tr>
+      <tr><td>2 · Funie</td><td class="k">6 m</td></tr>
+      <tr><td>3 · Flotări</td><td class="k">50</td></tr>
+      <tr><td>4 · Tracțiuni</td><td class="k">10</td></tr>
+      <tr><td>5 · Flexii biceps 20 kg</td><td class="k">10</td></tr>
+      <tr class="hi"><td>6 · Dips</td><td class="k">10</td></tr>
+      <tr><td>7 · Abdomene</td><td class="k">40</td></tr>
+      <tr><td>8 · Împins 50 kg</td><td class="k">20</td></tr>
+      <tr><td>9 · Sărituri peste bancă</td><td class="k">40</td></tr>
+      <tr><td>10 · Assault bike</td><td class="k">1000 m</td></tr>
+    </table>
+  </div>
+
+  <div class="panel edge">
+    <div class="pt">Protocol de greutate</div>
+    <p class="muted">A treia prioritate, și singura fără nicio ședință de antrenament în plus.</p>
+    <table class="tbl"><tr><th>Perioadă</th><th>Ce faci</th></tr>
+      <tr><td>S1–S4 · 21 sept – 18 oct</td><td class="k">deficit moderat, ~0,5–0,7 kg pe săptămână</td></tr>
+      <tr class="hi"><td>S5 – 10 nov</td><td class="k">menținere · mănânci pentru ședințe</td></tr>
+    </table>
+    <ul class="klist">
+      <li><b>Proteină mare</b> — în jur de 2 g pe kilogram de greutate țintă. E ce te ține să pierzi grăsime, nu mușchi.</li>
+      <li><b>Carbohidrații rămân</b> în zilele cu intervale lungi și circuit. Deficitul se face în zilele ușoare.</li>
+      <li><b>Nu scădea nimic din S5 încolo.</b> Deficitul în ultimele trei săptămâni îți taie calitatea ședințelor și nu mai ai timp să recuperezi.</li>
+      <li>Ținta rezonabilă: <b>5–6 kg</b> până la 18 octombrie. Mai mult înseamnă că pierzi și mușchi.</li>
+    </ul>
+  </div>
+
+  <div class="panel">
+    <div class="pt">Trei lucruri din afara programului</div>
+    <div class="note"><b>Greutatea corporală.</b> Aproximativ 2 secunde pe kilogram la 1000 m. Cinci kilograme jos acoperă jumătate din decalaj fără un antrenament în plus — și ajută la dips, tracțiuni și sărituri.</div>
+    <div class="note good"><b>Suprapunerea cu SRI.</b> 50 m și 1000 m apar la ambele selecții, iar baremele SRI sunt mai dure. Alergarea de aici lucrează pentru amândouă.</div>
+    <div class="note neutral"><b>Ture rotative.</b> Ordinea zilelor contează mai puțin decât succesiunea. Muți ziua liberă unde ai tura de noapte — dar niciodată circuit imediat după intervale lungi.</div>
+  </div>`;
+}
+function pRow(p){
+  const v=S.probes[p.k];let cls="",txt="—";
+  if(v!=null){const ok=p.low?v<=p.t:v>=p.t;cls=ok?"hit":"miss";txt=showVal(v,p.u);}
+  return `<div class="pr"><div class="tg">${p.tg}</div>
+    <div><div class="nm">${p.n}</div><div class="mt">${p.m}</div></div>
+    <div class="vv ${cls}">${txt}</div></div>`;
+}
+
+function vPlan(){
+  return `<div class="panel edge"><div class="pt">Patru faze · 21 sept – 10 nov</div>
+    <p class="muted">Șapte săptămâni pline plus două zile de descărcare finală. Fără săptămână de testare: intri direct în acumulare.</p></div>
+  ${PHASES.map((p,i)=>`
+  <div class="ph${S.open["p"+i]?" open":""}" data-ph="p${i}">
+    <button class="ph-h"><div class="ph-n">${i+1}</div>
+      <div><div class="ph-t">${p.t}</div><div class="ph-w">${p.w}</div></div>
+      <div class="chev">${I.chev}</div></button>
+    <div class="ph-b"><div class="ph-i">
+      ${p.l.map(([a,b])=>`<div class="ln"><b>${a}</b><p>${b}</p></div>`).join("")}
+    </div></div></div>`).join("")}`;
+}
+
+function vRitm(){
+  return `
+  <div class="panel edge"><div class="pt">Ritmuri de referință</div>
+  <p class="muted">Pornind de la 4:15 actual (14,1 km/h) spre baremul de 3:50 (15,7 km/h), și de la 2:00/500 m la ramat.</p></div>
+
+  <div class="panel"><div class="pt">Alergare — viteza pe bandă</div>
+  <table class="tbl"><tr><th>Sesiune</th><th>Timp</th><th>km/h</th></tr>
+    <tr><td>800 m · S1</td><td class="k">3:24</td><td class="k">14,1</td></tr>
+    <tr><td>1000 m · S3</td><td class="k">4:12</td><td class="k">14,3</td></tr>
+    <tr><td>600 m · S1</td><td class="k">2:24</td><td class="k">15,0</td></tr>
+    <tr><td>400 m · S2</td><td class="k">1:34</td><td class="k">15,3</td></tr>
+    <tr><td>600 m · S2</td><td class="k">2:21</td><td class="k">15,3</td></tr>
+    <tr><td>500 m · S5</td><td class="k">1:57</td><td class="k">15,4</td></tr>
+    <tr><td>400 m ritm · S4, S7</td><td class="k">1:32</td><td class="k">15,7</td></tr>
+    <tr><td>600 m ritm · S3, S5, S6</td><td class="k">2:18</td><td class="k">15,7</td></tr>
+    <tr><td>200 m</td><td class="k">0:43–0:44</td><td class="k">16,4–16,7</td></tr>
+    <tr class="hi"><td>1000 m la probă</td><td class="k">3:50</td><td class="k">15,7</td></tr>
+  </table>
+  <div class="note"><b>Pe bandă, pune 1% înclinare.</b> Fără rezistența aerului, banda subestimează efortul la peste 13 km/h. Cu 1% înclinare, 15,7 km/h pe bandă costă cât 15,7 km/h afară.</div>
+  </div>
+
+  <div class="panel"><div class="pt">Sprint 50 m</div>
+  <table class="tbl"><tr><th>Săptămâna</th><th>Timp</th><th>km/h mediu</th></tr>
+    <tr><td>S1</td><td class="k">7.40</td><td class="k">24,3</td></tr>
+    <tr><td>S2</td><td class="k">7.30</td><td class="k">24,7</td></tr>
+    <tr><td>S3</td><td class="k">7.20</td><td class="k">25,0</td></tr>
+    <tr><td>S4</td><td class="k">7.15</td><td class="k">25,2</td></tr>
+    <tr><td>S5</td><td class="k">7.10</td><td class="k">25,4</td></tr>
+    <tr><td>S6</td><td class="k">7.00</td><td class="k">25,7</td></tr>
+    <tr class="hi"><td>S7</td><td class="k">6.95</td><td class="k">25,9</td></tr>
+  </table>
+  <div class="note"><b>Sprinturile se fac numai afară.</b> 25 km/h depășește viteza maximă a majorității benzilor, iar startul din ghemuit nu se poate executa pe bandă.</div>
+  </div>
+
+  <div class="panel"><div class="pt">Ramat — 2:00 / 500 m</div>
+  <table class="tbl"><tr><th>Distanță</th><th>Țintă</th></tr>
+    <tr><td>500 m</td><td class="k">1:57</td></tr>
+    <tr><td>750 m</td><td class="k">2:53</td></tr>
+    <tr><td>1000 m</td><td class="k">3:56–4:05</td></tr>
+    <tr><td>1200 m</td><td class="k">4:42</td></tr>
+    <tr><td>1500 m antrenament</td><td class="k">6:05</td></tr>
+    <tr class="hi"><td>1500 m la probă</td><td class="k">sub 6:00</td></tr>
+    <tr><td>2000 m</td><td class="k">8:10</td></tr>
+  </table></div>
+
+  <div class="panel"><div class="pt">Assault bike</div>
+  <table class="tbl"><tr><th>Distanță</th><th>Țintă</th></tr>
+    <tr><td>600 m</td><td class="k">1:12–1:15</td></tr>
+    <tr><td>700 m</td><td class="k">1:24</td></tr>
+    <tr><td>800 m</td><td class="k">1:36</td></tr>
+    <tr class="hi"><td>1000 m</td><td class="k">2:00</td></tr>
+  </table></div>
+
+  <div class="panel"><div class="pt">Forță și rezistență musculară</div>
+  <table class="tbl"><tr><th>Exercițiu</th><th>Prescripție</th></tr>
+    <tr><td>Flotări zilnic</td><td class="k">5 × 65% din maxim, pauză 90 s</td></tr>
+    <tr><td>Flotări la cedare</td><td class="k">de 2 ori pe săptămână, + 4 clustere</td></tr>
+    <tr><td>Flotări îngreunate</td><td class="k">1 dată pe săptămână, 4 × 10</td></tr>
+    <tr><td>Abdomene zilnic</td><td class="k">3 × 30 ritm rar, pauză 90 s</td></tr>
+    <tr><td>Abdomene peste prag</td><td class="k">2 × 40 → 45 → 50, săptămânal</td></tr>
+    <tr><td>Expirație completă</td><td class="k">2 × 30 respirații pe zi</td></tr>
+    <tr><td>Ridicări de picioare</td><td class="k">de 2 ori pe săptămână, 3 × 12–15</td></tr>
+    <tr><td>Dips negative</td><td class="k">5 × 4–5, coborâre 5 s</td></tr>
+    <tr><td>Dips clustere</td><td class="k">4 runde, pauză 10 → 8 → 6 s</td></tr>
+    <tr><td>Dips susținere sus</td><td class="k">4 × 20 → 30 s</td></tr>
+    <tr><td>Împins la piept</td><td class="k">4–5 × 4–6, cu 2–3 repetări în rezervă</td></tr>
+    <tr><td>Împins priză îngustă</td><td class="k">3–4 × 10</td></tr>
+    <tr><td>Atârnat</td><td class="k">3 × maxim, 45 → 90 s</td></tr>
+    <tr><td>Ridicări pe vârfuri</td><td class="k">3–4 × 10–15, greu, pauză 1 s sus</td></tr>
+  </table></div>`;
+}
+
+let selW=curWeek();
+function vZile(){
+  const w=WEEKS.find(x=>x.n===selW);
+  let done=0,total=0;
+  w.days.forEach((d,i)=>d.ex.forEach((e,j)=>{total++;if(S.ex[`${w.n}-${i}-${j}`])done++;}));
+  return `
+  <div class="chips">${WEEKS.map(x=>`<button class="chip${x.n===selW?" on":""}" data-w="${x.n}">S${x.n}</button>`).join("")}</div>
+  <div class="pbh"><span>Săptămâna ${w.n} · ${w.block}</span><span>${done}/${total}</span></div>
+  <div class="pb"><i style="width:${total?done/total*100:0}%"></i></div>
+  ${w.days.map((d,i)=>dayCard(w,d,i)).join("")}`;
+}
+function dayCard(w,d,i,always){
+  const dt=dateOf(w.n,i),today=isToday(dt);
+  let dn=0;d.ex.forEach((e,j)=>{if(S.ex[`${w.n}-${i}-${j}`])dn++;});
+  const pct=d.ex.length?dn/d.ex.length:0,C=2*Math.PI*12,open=S.open[`d${w.n}-${i}`];
+  const lbl={hard:"greu",easy:"ușor",power:"putere",cal:"test",rest:"liber"}[d.tag];
+  return `<div class="day${today?" today":""}${d.tag==="rest"?" rest":""}${open?" open":""}${always?" always":""}" data-day="${w.n}-${i}">
+    <button class="day-h">
+      <svg class="dring" viewBox="0 0 30 30">
+        <circle cx="15" cy="15" r="12" fill="none" stroke="#2C2C2E" stroke-width="3.5"/>
+        <circle cx="15" cy="15" r="12" fill="none" stroke="${pct>=1?"#30D158":"#0A84FF"}" stroke-width="3.5"
+          stroke-dasharray="${C}" stroke-dashoffset="${C*(1-pct)}" stroke-linecap="round" transform="rotate(-90 15 15)"/>
+        <text x="15" y="19" text-anchor="middle">${dn}</text></svg>
+      <div class="day-b">
+        <div class="day-l">${DN[i]}${today?"<em>azi</em>":""}</div>
+        <div class="day-t">${d.t}</div>
+        <div class="day-m"><span class="wtag ${d.tag}">${lbl}</span>${d.loc?`<span class="wtag loc">${d.loc}</span>`:""}<span class="day-dt">${fmt(dt)}</span></div>
+      </div>
+      <div class="chev">${I.chev}</div>
+    </button>
+    <div class="day-body"><div class="exl">
+      ${d.ex.map((e,j)=>exRow(w.n,i,j,e)).join("")}
+      ${d.f?`<div class="foot">${d.f}</div>`:""}
+    </div></div></div>`;
+}
+function exRow(wn,i,j,e){
+  const key=`${wn}-${i}-${j}`,on=S.ex[key],arr=S.log[key]||[];
+  let sets="";
+  if(e.s){
+    sets=`<div class="sets">${Array.from({length:e.s},(_,k)=>{
+      const v=arr[k];let cls="";
+      if(v!=null&&e.tv!=null){const good=e.low?v<=e.tv:v>=e.tv;cls=good?"good":"bad";}
+      return `<input class="setin ${cls}" data-log="${key}|${k}" inputmode="${e.u==="t"?"text":"decimal"}"
+        placeholder="${e.tv!=null?showVal(e.tv,e.u):"—"}" value="${v!=null?showVal(v,e.u):""}">`;}).join("")}</div>`;
+  }
+  return `<div class="ex${on?" on":""}"><div class="ex-top">
+    <button class="ex-t" data-ex="${key}">
+      <span class="ex-bx">${I.check}</span>
+      <span><span class="ex-n">${e.n}${e.bar?'<span class="locb">bară</span>':""}</span>${e.d?`<span class="ex-d">${e.d}</span>`:""}${e.alt?`<span class="ex-alt">${e.alt}</span>`:""}</span>
+    </button></div>${sets}</div>`;
+}
+
+let t0=null,tid=null,laps=[];
+function vCircuit(){
+  let cum=0;
+  const rows=STATION.map((s,i)=>{cum+=s.t;return `<tr${i===5?' class="hi"':""}><td>${i+1} · ${s.n}</td><td class="k">${mmss(s.t)}</td><td>${mmss(cum)}</td></tr>`;}).join("");
+  const i=laps.length;
+  const now=i>=STATION.length?"Terminat":(t0||i?STATION[i].n:"Apasă Start");
+  return `
+  <div class="panel">
+    <div class="stt">${i>=STATION.length?"final":"stația "+Math.min(i+1,10)+" din 10"}</div>
+    <div class="clk" id="clk">${t0?mmss((Date.now()-t0)/1000):(laps.length?mmss(laps[laps.length-1]):"00:00")}</div>
+    <div class="stn">${now}</div>
+    <div class="btns"><button class="btn red" id="bLap">Stație gata</button>
+      <button class="btn" id="bStart">${t0?"Stop":"Start"}</button></div>
+    <div style="margin-top:13px">${lapsHtml()}</div>
+    ${laps.length?'<button class="btn ghost" id="bReset" style="width:100%;margin-top:9px">Resetează</button>':""}
+  </div>
+  <div class="panel edge"><div class="pt">Ritm orientativ</div>
+    <p class="muted">Reperul ca să nu arzi tot la ramat. Singura limită dată e cea de 6:00 la 1500 m.</p>
+    <table class="tbl"><tr><th>Stație</th><th>Țintă</th><th>Trecere</th></tr>${rows}</table></div>
+  <div class="panel"><div class="pt">Tactica pe stații</div>
+    ${tac("Ramat 1500 m","Ritm 2:00/500. Primii 250 m <b>nu sub 1:52</b> — dacă intri prea tare, plătești pe toate stațiile următoare. Plan: 1:58 / 2:02 / 1:58.")}
+    ${tac("Funie 6 m","J-hook la fiecare pas. Coborârea controlată — pielea palmei e scumpă când mai ai zece tracțiuni de făcut.")}
+    ${tac("50 flotări","<b>25 – 15 – 10</b> din start, cu 5 s pauză în poziție sus. Dacă mergi la cedare și pici la 35, restul te costă mai mult decât cele două pauze.")}
+    ${tac("10 tracțiuni","<b>6 – 4</b>, cu pauza luată atârnat, nu jos de la bară.")}
+    ${tac("10 flexii biceps","Singura stație de respirat și, la tine, cea mai importantă tactic. O faci <b>intenționat mai lent</b> — zece secunde în plus de pauză pentru triceps, exact înainte de stația care te costă.")}
+    ${tac("10 dips","Pauzele sunt permise, deci nu planifici un split fix. Faci câte iese, <b>rămâi sus în sprijin cu brațele blocate</b>, numeri 6–8 secunde, reiei. Nu cobori de pe bare: reintrarea costă mai mult decât pauza.")}
+    ${tac("40 abdomene","Ritm constant, expiri sus. Tentația e să sprintezi — dar tocmai urmează împinsul.")}
+    ${tac("Împins 50 kg × 20","<b>12 – 8</b>, sau 10 – 6 – 4 dacă pieptul e ars de la flotări.")}
+    ${tac("40 sărituri peste bancă","Aterizare pe toată talpa, genunchiul moale. La 125 kg, 40 de aterizări rigide sunt risc real de tendon rotulian.")}
+    ${tac("Assault bike 1000 m","Țintă 2:00. Tot ce a rămas, ritm ridicat din prima.")}
+  </div>`;
+}
+const tac=(t,p)=>`<div class="prio"><div class="r off">·</div><div><h3>${t}</h3><p>${p}</p></div></div>`;
+function lapsHtml(){
+  if(!laps.length)return '<p class="muted" style="font-size:12.5px">Apasă „Stație gata" după fiecare stație. Splitul se compară cu ritmul orientativ.</p>';
+  let prev=0;
+  return laps.map((tot,i)=>{const sp=tot-prev;prev=tot;
+    const c=sp>STATION[i].t*1.12?"over":(sp<STATION[i].t*.95?"under":"");
+    return `<div class="lap ${c}"><span>${i+1}. ${STATION[i].n}</span><b>${mmss(sp)} · ${mmss(tot)}</b></div>`;}).join("");
+}
+
+function vCifre(){
+  const {h,tot}=hits(),best=S.hist.length?Math.min(...S.hist.map(x=>x.t)):null;
+  return `
+  <div class="stats">
+    <div class="stat"><div class="k">bareme</div><div class="v">${h}<small>/${tot}</small></div></div>
+    <div class="stat"><div class="k">circuite</div><div class="v">${S.hist.length}</div></div>
+    <div class="stat"><div class="k">cel mai bun</div><div class="v" style="font-size:22px">${best?mmss(best):"—"}</div></div>
+  </div>
+
+  <div class="panel edge"><div class="pt">Maximele care calculează volumul zilnic</div>
+    <p class="muted">Din ele se calculează seriile de flotări și dips din fila Azi. Le actualizezi după fiecare test.</p>
+    <div class="row"><input class="inp" id="mxFlot" placeholder="flotări maxim" inputmode="numeric" value="${S.max.flot||""}">
+      <input class="inp" id="mxDips" placeholder="dips maxim" inputmode="numeric" value="${S.max.dips||""}">
+      <button class="btn solid" id="bMax">OK</button></div>
+    ${S.max.flot?`<div class="note good">Zilnic: <b>5 × ${Math.round(S.max.flot*.55)} flotări</b>, pauză 90 s.${S.max.dips?` Dips GTG: <b>4–5 × ${Math.max(1,Math.round(S.max.dips*.5))}</b>.`:""}</div>`:""}
+  </div>
+
+  <div class="panel"><div class="pt">Rezultate</div>
+    <p class="muted">Timpii se scriu ca <span class="mono">3:48</span>, restul ca număr.</p>
+    ${PROBE.map(p=>{
+      const v=S.probes[p.k];let pct=0,ok=false;
+      if(v!=null){ if(p.low){pct=Math.min(100,p.t/v*100);ok=v<=p.t;} else {pct=Math.min(100,v/p.t*100);ok=v>=p.t;} }
+      return `<div style="padding:13px 0;border-bottom:1px solid var(--line2)">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px">
+          <div style="font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.03em">${p.n}</div>
+          <div class="mono" style="font-size:11.5px;color:${ok?"var(--ok)":"var(--mute2)"}">${v!=null?showVal(v,p.u):"—"} / ${showVal(p.t,p.u)}</div>
+        </div>
+        <div class="pb" style="margin-top:7px"><i style="width:${pct}%;background:${ok?"var(--ok)":"var(--blue)"}"></i></div>
+        <div class="row"><input class="inp" data-p="${p.k}" placeholder="${p.u==="t"?"mm:ss":"valoare"}" inputmode="${p.u==="t"?"text":"decimal"}">
+        <button class="btn solid" data-sv="${p.k}">OK</button></div></div>`;}).join("")}
+  </div>
+
+  <div class="panel"><div class="pt">Istoric circuit</div>
+    ${S.hist.length?S.hist.map(x=>`<div class="lap"><span>${x.d}</span><b>${mmss(x.t)}</b></div>`).join("")
+      :'<p class="muted" style="font-size:12.5px">Nimic încă. Cronometrul salvează automat la finalul celor 10 stații.</p>'}
+  </div>
+
+  <div class="panel"><div class="pt">Date</div>
+    <div class="btns" style="grid-template-columns:1fr 1fr">
+      <button class="btn" id="bExp">Exportă</button>
+      <button class="btn" id="bImp">Importă</button></div>
+    <textarea class="inp" id="ioBox" rows="4" style="margin-top:9px;display:none;font-size:11px" placeholder="lipești aici datele exportate"></textarea>
+    <button class="btn ghost" id="bWipe" style="width:100%;margin-top:9px">Șterge toate datele salvate</button>
+  </div>`;
+}
+
+function vProba(){
+  return `
+  <div class="panel edge"><div class="pt">10 noiembrie</div>
+    <p class="muted">Nimic nou în ultimele 48 de ore — mâncare, suplimente, încălțăminte, tehnică.</p></div>
+  <div class="panel"><div class="pt">Ziua dinainte</div>
+    <ul class="klist">
+      <li>Activare scurtă: <b>10 min mers, 3 × 20 m accelerări, 10 flotări, 5 genuflexiuni.</b> Atât.</li>
+      <li>Carbohidrați normali la toate mesele, apă constantă, sare la mese.</li>
+      <li>Echipamentul pregătit seara, nu dimineața.</li>
+      <li>Culcat cu o oră mai devreme decât de obicei.</li></ul></div>
+  <div class="panel"><div class="pt">Încălzire</div>
+    <p class="muted">Început cu 45 de minute înainte de prima probă.</p>
+    <table class="tbl"><tr><th>Etapă</th><th>Durată</th></tr>
+      <tr><td>Mers / alergare ușoară</td><td class="k">8 min</td></tr>
+      <tr><td>Mobilitate dinamică — șold, gleznă, umeri</td><td class="k">5 min</td></tr>
+      <tr><td>3 × 30 m accelerări — 70 / 85 / 95%</td><td class="k">4 min</td></tr>
+      <tr><td>2 × 15 m sprint din start ghemuit</td><td class="k">3 min</td></tr>
+      <tr><td>15 flotări, 10 genuflexiuni</td><td class="k">3 min</td></tr>
+      <tr><td>Reactivare 2 × 20 m</td><td class="k">cu 10 min înainte de fiecare probă</td></tr>
+    </table></div>
+  <div class="panel"><div class="pt">Plan de cursă — 1000 m</div>
+    <table class="tbl"><tr><th>Fracțiune</th><th>Trecere</th></tr>
+      <tr><td>200 m</td><td class="k">0:46</td></tr><tr><td>400 m</td><td class="k">1:32</td></tr>
+      <tr><td>600 m</td><td class="k">2:18</td></tr><tr><td>800 m</td><td class="k">3:04</td></tr>
+      <tr class="hi"><td>1000 m</td><td class="k">3:50</td></tr></table>
+    <div class="note">Prima tură e cea mai periculoasă. La adrenalină pleci cu 42 s și mori la 600 m. <b>Dacă treci 400 m sub 1:28, încetinești conștient.</b> Ultimii 200 m sunt singurul loc unde ai voie să dai tot.</div></div>
+  <div class="panel"><div class="pt">Ordinea efortului</div>
+    <p class="muted">Dacă ai control: 50 m cât ești proaspăt, apoi probele de forță, 1000 m după o pauză cât de lungă e permisă, atârnatul ultimul dintre individuale.</p>
+    <div class="note good">Dacă ordinea e impusă și 1000 m vine după flotări, nu te speria de picioare grele. <b>Ritmul se ține la cap, nu la senzație</b> — treci la 400 m în 1:32 indiferent cum se simte.</div></div>`;
+}
+
+
+function vDovezi(){
+  const E=(t,g,c,f)=>`<div class="prio"><div class="r ${g==='ok'?'':'off'}">${g==='ok'?'✓':(g==='fix'?'!':'·')}</div>
+    <div><h3>${t}</h3><p>${c}</p><p style="color:var(--mute2);font-size:11.5px;margin-top:6px">${f}</p></div></div>`;
+  return `
+  <div class="panel edge"><div class="pt">Ce a confirmat cercetarea</div>
+  <p class="muted">Fiecare alegere din program, verificată. Bifa = confirmat, semnul de exclamare = am corectat după dovezi.</p>
+  ${E("Intervale lungi peste cele scurte","ok",
+    "Intervalele de ~3 minute produc semnificativ mai mult timp petrecut peste 90% din VO2max decât repetările de 30 s, chiar și când cele scurte se aleargă mai repede și cu același raport efort-pauză. O sesiune de repetări de 1 km a dat ~14 minute peste 90% din frecvența maximă, față de ~5 minute la intervalele scurte.",
+    "Fleckenstein et al., Frontiers in Sports and Active Living, 2025 · studiu pe alergători de semifond")}
+  ${E("Cedarea nu e necesară la flotări","ok",
+    "Meta-analiza a 15 studii nu a găsit nicio diferență între antrenamentul până la cedare și cel oprit înainte, nici pentru forță, nici pentru masă musculară. Acolo unde volumul nu a fost egalat, seriile oprite înainte de cedare au produs câștiguri de forță mai mari.",
+    "Grgic et al., Journal of Sport and Health Science, 2022")}
+  ${E("Forța grea bate pliometria pentru economia alergării","fix",
+    "Comparație directă: efectul forței grele asupra economiei alergării e mic dar real (g = −0,32), al pliometriei e neglijabil (g = −0,13). Separat, antrenamentul izometric al flexorilor plantari a produs îmbunătățiri de 4–7% ale economiei. <b>Corecție aplicată:</b> am adăugat izometrii de gambă de 30–40 s lângă ridicările pe vârfuri, și am ținut săriturile la minimul cerut de probă — la 125 kg pliometria e cost, nu beneficiu.",
+    "Eihara et al., Sports Medicine – Open, 2022 · Lum et al., pe izometrie")}
+  ${E("Taperul: volum jos, frecvență neschimbată","fix",
+    "Strategia optimă e reducerea volumului cu 41–60%, cu intensitatea și <b>frecvența păstrate</b>. Reducerea frecvenței dă un efect mai slab. Durata: până în 21 de zile, cu 8–14 zile ca fereastră tipică. Taperul precedat de o săptămână de supraîncărcare e superior celui obișnuit. <b>Corecție aplicată:</b> joia din S7 nu mai e zi liberă, ci o ședință scurtă — păstrezi șase zile de antrenament, doar mult mai ușoare.",
+    "Bosquet et al., Medicine & Science in Sports & Exercise, 2007 · Wang et al., PLOS One, 2023")}
+  ${E("Interferența dintre forță și alergare e mică, dar reală","ok",
+    "Meta-analizele moderne arată interferență mică pe forța maximă și aproape deloc pe masă musculară — dar efectul apare mai ales când cele două se fac în aceeași ședință (ES −0,66) și aproape dispare când sunt separate (ES −0,10). Alergarea interferează mai mult decât ciclismul, din cauza componentei excentrice. Separarea recomandată: minimum 3 ore, ideal 6.",
+    "Schumann et al., Sports Medicine, 2022 · Petré et al., 2021 · Wilson et al., JSCR, 2012")}
+  ${E("Ramatul și bike-ul: mențin, nu construiesc","fix",
+    "Meta-analiza din 2026 nu a găsit nici îmbunătățiri, nici scăderi clare ale VO2max specific alergării sau ale performanței la alergare după antrenament încrucișat. Capacitatea aerobă centrală se transferă; economia alergării și toleranța la impact <b>nu</b>. <b>Corecție aplicată:</b> ziua fără impact rămâne ca asigurare contra accidentării, dar dacă în S3 nu ai niciun semnal la tibie sau Ahile, adaugi 15 minute de alergare ușoară la începutul ei.",
+    "Menges et al., Frontiers in Sports and Active Living, 2026")}
+  ${E("Greutatea: 2 secunde pe kilogram se confirmă","ok",
+    "Estimările converg pe 1,25–3 secunde pe kilometru pentru fiecare kilogram, iar „regula de 1%\" (1% din masă = 1% din timp) dă la tine ~2 secunde pe kilogram la 1000 m. Reducerea masei inactive a îmbunătățit semnificativ timpul pe 3 km într-un studiu cu încărcare controlată. Condiția: să fie grăsime, nu mușchi.",
+    "Studii de încărcare externă · recenzii despre greutatea de concurs")}
+  ${E("Pașii mai deși scad riscul de fractură de stres","fix",
+    "Scurtarea pasului cu 10% reduce încărcarea musculo-scheletică, deformarea tibiei și riscul estimat de fractură de stres, indiferent de înălțime. <b>Corecție aplicată:</b> la fiecare alergare, cadență cu 5–10% peste cea naturală. Nu costă nimic și la 2 metri și 125 kg e cea mai ieftină asigurare pe care o ai.",
+    "studiu pe biomecanica lungimii pasului, 2023")}
+  ${E("Tura de noapte taie puterea 24 de ore","fix",
+    "Restricția de somn la ~4 ore scade puterea maximă și motivația de a te antrena atât la 12, cât și la 24 de ore după — fără ca markerii de distrugere musculară să crească. Adică pierzi calitatea ședinței, nu te distrugi. <b>Regulă aplicată:</b> după tura de noapte pui ziua de recuperare sau stațiile tehnice, niciodată intervalele lungi sau simularea.",
+    "Rae et al., 2017 · recenzii despre somn și performanță")}
+  </div>
+
+  <div class="panel"><div class="pt">Reguli de programare</div>
+  <ul class="klist">
+    <li><b>Minimum 6 ore</b> între alergarea grea și ședința de forță, dacă pică în aceeași zi. Dacă nu se poate, forța prima.</li>
+    <li><b>Niciodată intervale lungi după tura de noapte.</b> Acolo mută recuperarea sau stațiile tehnice.</li>
+    <li><b>Cadență cu 5–10% peste natural</b> la fiecare alergare, toată perioada.</li>
+    <li><b>Greutatea se scade în S1–S4</b>, nu după. Din S5 mănânci ca să susții ședințele, nu ca să slăbești.</li>
+    <li><b>Durere punctuală pe os</b> (tibie, laba piciorului) care apare la alergat și persistă la mers: oprești alergarea imediat și treci totul pe ramat. Nu e ceva ce se „aleargă până trece".</li>
+  </ul></div>`;
+}
+
+/* ===== cronometru de pauză ===== */
+let rEnd=null,rTick=null;
+function paintDock(){
+  const b=$("#dockBtn");
+  if(rEnd==null){b.className="idle";b.textContent="Pauză";return;}
+  const left=Math.max(0,Math.round((rEnd-Date.now())/1000));
+  if(left<=0){b.className="done";b.textContent="GATA";
+    if(rTick){clearInterval(rTick);rTick=null;}
+    try{navigator.vibrate&&navigator.vibrate([200,80,200]);}catch(e){}
+    setTimeout(()=>{rEnd=null;paintDock();},3000);return;}
+  b.className="";b.textContent=mmss(left);
+}
+function startRest(sec){
+  rEnd=Date.now()+sec*1000;
+  if(rTick)clearInterval(rTick);
+  rTick=setInterval(paintDock,250);paintDock();
+  $("#dockMenu").classList.add("hide");
+}
+$("#dockMenu").innerHTML=[45,60,90,120,150,180].map(s=>`<button data-rest="${s}">${s<60?s+" s":(s/60)+" min"}</button>`).join("");
+$("#dockMenu").querySelectorAll("[data-rest]").forEach(b=>b.onclick=()=>startRest(+b.dataset.rest));
+$("#dockBtn").onclick=()=>{
+  if(rEnd!=null){rEnd=null;if(rTick)clearInterval(rTick);rTick=null;paintDock();return;}
+  $("#dockMenu").classList.toggle("hide");
+};
+
+/* ===== render ===== */
+function render(){
+  const v=$("#view");
+  v.innerHTML={azi:vAzi,brief:vBrief,plan:vPlan,zile:vZile,ritm:vRitm,circuit:vCircuit,dovezi:vDovezi,cifre:vCifre,proba:vProba}[view]();
+  $("#pill").textContent=daysLeft()+" zile · 10 nov";
+
+  v.querySelectorAll("[data-ph] .ph-h").forEach(b=>b.onclick=async()=>{
+    const k=b.parentElement.dataset.ph;S.open[k]=!S.open[k];b.parentElement.classList.toggle("open");await save();});
+  v.querySelectorAll(".chip[data-w]").forEach(b=>b.onclick=()=>{selW=+b.dataset.w;render();});
+  v.querySelectorAll(".day .day-h").forEach(b=>b.onclick=async()=>{
+    const c=b.parentElement;if(c.classList.contains("always"))return;
+    S.open["d"+c.dataset.day]=!S.open["d"+c.dataset.day];c.classList.toggle("open");await save();});
+  v.querySelectorAll("[data-ex]").forEach(b=>b.onclick=async e=>{
+    e.stopPropagation();const k=b.dataset.ex;S.ex[k]=!S.ex[k];await save();
+    b.closest(".ex").classList.toggle("on");
+    const card=b.closest(".day");if(card)refreshRing(card);});
+  v.querySelectorAll("[data-log]").forEach(inp=>{
+    inp.onchange=async()=>{
+      const parts=inp.dataset.log.split("|"),key=parts[0],idx=+parts[1];
+      const ex=exByKey(key),val=parseVal(inp.value);
+      S.log[key]=S.log[key]||[];S.log[key][idx]=val;await save();
+      inp.classList.remove("good","bad");
+      if(val!=null&&ex&&ex.tv!=null) inp.classList.add((ex.low?val<=ex.tv:val>=ex.tv)?"good":"bad");
+      if(val!=null&&ex&&ex.u==="t") inp.value=mmss(val);
+    };});
+  v.querySelectorAll("[data-sv]").forEach(b=>b.onclick=async()=>{
+    const k=b.dataset.sv,val=parseVal(v.querySelector(`input[data-p="${k}"]`).value);
+    if(val==null)return;S.probes[k]=val;await save();render();});
+
+  const bm=v.querySelector("#bMax");
+  if(bm)bm.onclick=async()=>{
+    const f=parseVal(v.querySelector("#mxFlot").value),dp=parseVal(v.querySelector("#mxDips").value);
+    if(f!=null)S.max.flot=f;if(dp!=null)S.max.dips=dp;await save();render();};
+
+  const be=v.querySelector("#bExp");
+  if(be)be.onclick=()=>{const t=v.querySelector("#ioBox");t.style.display="block";t.value=JSON.stringify(S);t.select();};
+  const bi=v.querySelector("#bImp");
+  if(bi)bi.onclick=async()=>{
+    const t=v.querySelector("#ioBox");
+    if(t.style.display==="none"||!t.value.trim()){t.style.display="block";t.placeholder="lipești aici datele și apeși din nou Importă";return;}
+    try{const o=JSON.parse(t.value);S=Object.assign({ex:{},log:{},open:{},probes:{},hist:[],max:{}},o);await save();render();}catch(e){t.value="Date invalide.";}};
+  const bw=v.querySelector("#bWipe");
+  if(bw)bw.onclick=async()=>{S={ex:{},log:{},open:{},probes:{},hist:[],max:{}};await save();render();};
+
+  const bs=v.querySelector("#bStart");
+  if(bs)bs.onclick=()=>{
+    if(t0){clearInterval(tid);t0=null;render();return;}
+    t0=Date.now();laps=[];
+    tid=setInterval(()=>{const c=document.querySelector("#clk");if(c)c.textContent=mmss((Date.now()-t0)/1000);},200);
+    render();};
+  const bl=v.querySelector("#bLap");
+  if(bl)bl.onclick=async()=>{
+    if(!t0||laps.length>=STATION.length)return;
+    laps.push((Date.now()-t0)/1000);
+    if(laps.length===STATION.length){
+      clearInterval(tid);const tot=laps[laps.length-1];t0=null;
+      S.hist.unshift({d:new Date().toLocaleDateString("ro-RO"),t:Math.round(tot)});
+      S.hist=S.hist.slice(0,20);await save();}
+    render();};
+  const br=v.querySelector("#bReset");
+  if(br)br.onclick=()=>{clearInterval(tid);t0=null;laps=[];render();};
+}
+function refreshRing(card){
+  const p=card.dataset.day.split("-").map(Number);
+  const wk=WEEKS.find(x=>x.n===p[0]),d=wk.days[p[1]];
+  let dn=0;d.ex.forEach((e,j)=>{if(S.ex[`${p[0]}-${p[1]}-${j}`])dn++;});
+  const pct=dn/d.ex.length,C=2*Math.PI*12;
+  const c=card.querySelectorAll(".dring circle")[1],t=card.querySelector(".dring text");
+  if(c){c.setAttribute("stroke-dashoffset",C*(1-pct));c.setAttribute("stroke",pct>=1?"#30D158":"#0A84FF");}
+  if(t)t.textContent=dn;
+}
+
+/* ===== boot ===== */
+(async function(){
+  const s=await DB.get("ultimastatie3.state");
+  if(s&&typeof s==="object")S=Object.assign({ex:{},log:{},open:{},probes:{},hist:[],max:{}},s);
+  selW=curWeek();paintTabs();render();paintDock();
+  const it=$("#intro"),kill=()=>it.classList.add("gone");
+  it.onclick=kill;setTimeout(kill,2100);
+  setInterval(()=>{$("#pill").textContent=daysLeft()+" zile · 10 nov";},60000);
+})();
+</script>
+</body>
+</html>
